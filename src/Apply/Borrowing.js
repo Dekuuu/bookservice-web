@@ -74,7 +74,7 @@ class Borrowing extends React.Component {
                 width: 200,
                 align: 'center',
                 render: (text, record, index) => {
-                    return record.renewAble === 1 ?
+                    return record.renewAble === 1 && record.returnState === 0?
                         <a href={"#"} onClick={this.xujie.bind(this,record.borrowingBookNo)}>续借</a> :
                         <span></span>
                 },
@@ -250,6 +250,30 @@ class Borrowing extends React.Component {
             },
         });
         this.fetchData();
+    }
+
+    //续借图书
+    xujie = (value) => {
+        let data = {
+            borrowingBookNo: value,
+            startIndex: 0,
+            endIndex: 10,
+        }
+        fetch('/book/borrowinfo/renew', {
+            method: 'post',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)//向服务器发送的数据
+        }).then(res => res.json())
+            .then(json => {
+                if (json.code === 1) {
+                    alert("续借成功");
+                } else {
+                    alert(json.data);
+                }
+                this.fetchData();
+            })
     }
 
     add=()=>{

@@ -1,6 +1,8 @@
 import React from 'react';
 import styles from "./Register.less";
 import 'antd/dist/antd.css';
+import { UserOutlined } from '@ant-design/icons';
+import { LockOutlined  } from '@ant-design/icons';
 import {Button, Form, Input, Row} from "antd";
 
 class Login extends React.Component {
@@ -118,11 +120,11 @@ class Login extends React.Component {
             <div style={{margin : "0 auto",width : 400,paddingTop : 20}}>
                 <Form className={styles.searchForm}>
                     <Row style={{marginBottom: "20px"}}>
-                        账号:<Input placeholder={"请输入手机号"} id={"phoneNo"} style={{width :200}}/>
+                        账号:<Input placeholder={"请输入手机号"} id={"phoneNo"} style={{width :200}} prefix={<UserOutlined />} allowClear={true}/>
                     </Row>
 
                     <Row style={{marginBottom: "20px"}}>
-                        密码:<Input type={"password"} placeholder={"请输入密码"} id={"password"} style={{width :200}}/>
+                        密码:<Input type={"password"} placeholder={"请输入密码"} id={"password"} style={{width :200}} prefix={<LockOutlined />} allowClear={true}/>
                     </Row>
 
                     <Row>

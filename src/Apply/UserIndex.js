@@ -4,6 +4,7 @@ import 'antd/dist/antd.css';
 import {Button, Form, Input, Row, Modal, Select, Collapse, Table} from "antd";
 import ReactGridManager, {$gridManager} from 'gridmanager-react';
 import 'gridmanager-react/css/gm-react.css';
+import {SearchOutlined} from "@ant-design/icons";
 
 const {Option} = Select;
 const Panel = Collapse.Panel;
@@ -543,7 +544,7 @@ class UserIndex extends React.Component {
                             <Option value={2}>待审核</Option>
                             <Option value={3}>审核失败</Option>
                         </Select>&nbsp;&nbsp;
-                            <br/> <Button type={"primary"} onClick={this.fetchData}>查询</Button>&nbsp;&nbsp;
+                            <br/> <Button type={"primary"} onClick={this.fetchData} icon={<SearchOutlined />} shape={"circle"}></Button>&nbsp;&nbsp;
                             <Button type={"primary"} onClick={this.reset}>重置</Button>&nbsp;&nbsp;
                             <Button type={"primary"} onClick={this.add}>新增</Button>
                         </Panel>

@@ -3,6 +3,9 @@ import 'antd/dist/antd.css';
 import {Button, Form, Input, Row, Modal, Select, Collapse, Table} from "antd";
 import ReactGridManager, {$gridManager} from 'gridmanager-react';
 import 'gridmanager-react/css/gm-react.css';
+import {UserOutlined} from "@ant-design/icons";
+import {LockOutlined} from "@ant-design/icons";
+import { MailOutlined  } from '@ant-design/icons';
 
 const {Option} = Select;
 const Panel = Collapse.Panel;
@@ -483,7 +486,7 @@ class adminUserManage extends React.Component {
                        width={600}
                        destroyOnClose={true}>
 
-                    用户名：<Input id={"userName"} defaultValue={this.state.modalValue.userName} readOnly/><br/>
+                    用户名：<Input id={"userName"} defaultValue={this.state.modalValue.userName} readOnly allowClear={true} prefix={<UserOutlined />}/><br/>
                     用户类型：<Select defaultValue={this.state.modalValue.userTypeName}
                                  style={{width: 200}}
                                  id={"categoryNo"}
@@ -491,8 +494,8 @@ class adminUserManage extends React.Component {
                     <Option value={1}>普通用户</Option>
                     <Option value={0}>管理员</Option>
                 </Select><br/>
-                    邮箱：<Input id={"email"} defaultValue={this.state.modalValue.email}/><br/>
-                    密码：<Input id={"password"} defaultValue={this.state.modalValue.password}/><br/>
+                    邮箱：<Input id={"email"} defaultValue={this.state.modalValue.email} allowClear={true} prefix={<MailOutlined />}/><br/>
+                    密码：<Input id={"password"} defaultValue={this.state.modalValue.password} allowClear={true} prefix={<LockOutlined />}/><br/>
                 </Modal>
 
                 <Modal visible={this.state.addModal}
@@ -503,7 +506,7 @@ class adminUserManage extends React.Component {
                        width={600}
                        destroyOnClose={true}>
                     用户名：<Input id={"userNameAdd"} style={{width: 200, marginBottom: 20}} placeholder={"请输入用户名"}
-                               allowClear={true}/><br/>
+                               allowClear={true} prefix={<UserOutlined />}/><br/>
                     用户类型：<Select
                     style={{width: 200, marginBottom: 20}}
                     id={"categoryNo"}
@@ -518,9 +521,9 @@ class adminUserManage extends React.Component {
                     </Option>
                 </Select><br/>
                     密码：<Input id={"passwordAdd"} placeholder={"请输入密码"} style={{width: 200, marginBottom: 20}}
-                              allowClear={true}/><br/>
+                              allowClear={true} prefix={<LockOutlined />}/><br/>
                     邮箱：<Input id={"emailAdd"} placeholder={"请输入邮箱"} style={{width: 200, marginBottom: 20}}
-                              allowClear={true}/><br/>
+                              allowClear={true} prefix={<MailOutlined />}/><br/>
                 </Modal>
             </div>
         );

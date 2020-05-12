@@ -5,6 +5,7 @@ import {Button, Form, Input, Row, Modal, Select, Collapse, DatePicker, Table} fr
 import ReactGridManager, {$gridManager} from 'gridmanager-react';
 import 'gridmanager-react/css/gm-react.css';
 import {Redirect} from 'react-router-dom';
+import {SearchOutlined} from "@ant-design/icons";
 
 const {Option} = Select;
 const Panel = Collapse.Panel;
@@ -294,7 +295,7 @@ class ipLog extends React.Component {
                             用户名：<Input placeholder={"请输入用户名"} style={{width: 200}} id={"userSearch"}
                                        allowClear={true}/>&nbsp;&nbsp;
                             登录日期：<DatePicker placeholder="请选择登陆日期" onChange={this.dateSearch} allowClear/>
-                            <Button type={"primary"} onClick={this.fetchData}>查询</Button>&nbsp;&nbsp;
+                            <Button type={"primary"} onClick={this.fetchData} icon={<SearchOutlined />} shape={"circle"}></Button>&nbsp;&nbsp;
                             <Button type={"primary"} onClick={this.reset}>重置</Button>&nbsp;&nbsp;
                         </Panel>
                     </Collapse>

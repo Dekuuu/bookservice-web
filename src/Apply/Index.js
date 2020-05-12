@@ -4,6 +4,8 @@ import {Button, Form, Input, Row, Modal, Select, Collapse, Table,Alert} from "an
 import ReactGridManager, {$gridManager} from 'gridmanager-react';
 import 'gridmanager-react/css/gm-react.css';
 import requestURL from './../config.json';
+import { SearchOutlined  } from '@ant-design/icons';
+import { HeartTwoTone   } from '@ant-design/icons';
 import style from './style.less';
 
 const {Option} = Select;
@@ -60,7 +62,8 @@ class Index extends React.Component {
                 width: 200,
                 align: 'center',
                 render: (text, record, index) => {
-                    return <a href={"#"} onClick={this.shoucang.bind(this, record)}>收藏</a>
+                    // return <a href={"#"} onClick={this.shoucang.bind(this, record)}>{HeartOutlined }</a>
+                    return <Button onClick={this.shoucang.bind(this, record)} icon={<HeartTwoTone twoToneColor="#eb2f96"/>} shape={"circle"}></Button>
                 },
             },
         ];
@@ -406,8 +409,8 @@ class Index extends React.Component {
                             </Select>&nbsp;&nbsp;
                                 作者：<Input placeholder={"请输入作者"} id={"authorSearch"} style={{width: 200}}
                                           allowClear={true}/>
-                                <br/> <Button type={"primary"} onClick={this.fetchData}>查询</Button>&nbsp;&nbsp;
-                                <Button type={"primary"} onClick={this.reset}>重置</Button>&nbsp;&nbsp;
+                                <br/> <Button type={"primary"} onClick={this.fetchData} icon={<SearchOutlined />} shape={"circle"}></Button>&nbsp;&nbsp;
+                                <Button type={"primary"} onClick={this.reset} >重置</Button>&nbsp;&nbsp;
                                 {/*<Button type={"primary"} onClick={this.test}>查询个人借书情况</Button>*/}
                             </Panel>
                         </Collapse>

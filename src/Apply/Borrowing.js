@@ -4,6 +4,7 @@ import {Button, Form, Input, Row, Modal, Select, Collapse, Table} from "antd";
 import ReactGridManager, {$gridManager} from 'gridmanager-react';
 import 'gridmanager-react/css/gm-react.css';
 import {Redirect} from 'react-router-dom';
+import {SearchOutlined} from "@ant-design/icons";
 const { Option }= Select;
 const Panel = Collapse.Panel;
 
@@ -363,7 +364,7 @@ class Borrowing extends React.Component {
                             <Option value={"1"}>已归还</Option>
                             <Option value={"0"}>未归还</Option>
                         </Select>&nbsp;&nbsp;
-                            <Button type={"primary"} onClick={this.fetchData}>查询</Button>&nbsp;&nbsp;
+                            <Button type={"primary"} onClick={this.fetchData} icon={<SearchOutlined />} shape={"circle"}></Button>&nbsp;&nbsp;
                             <Button type={"primary"} onClick={this.reset}>重置</Button>&nbsp;&nbsp;
                         </Panel>
                     </Collapse>

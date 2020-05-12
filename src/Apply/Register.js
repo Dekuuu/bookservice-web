@@ -7,6 +7,8 @@ import {
 } from 'antd';
 import 'antd/dist/antd.css';
 import styles from './Register.less';
+import {UserOutlined} from "@ant-design/icons";
+import { LockOutlined  } from '@ant-design/icons';
 
 class Register extends React.Component {
 
@@ -124,21 +126,21 @@ class Register extends React.Component {
             <div style={{margin : "0 auto",width : 400,paddingTop : 20}}>
                 <Form className={styles.searchForm}>
                     <Row style={{marginBottom: "20px"}}>
-                        手机号：<Input placeholder={"请输入手机号"} id={"phoneNo"} style={{width :200}}/>
+                        手机号：<Input placeholder={"请输入手机号"} id={"phoneNo"} style={{width :200}} prefix={<UserOutlined />} allowClear={true}/>
                     </Row>
 
                     <Row style={{marginBottom: "20px"}}>
-                        密码：<Input type={"password"} placeholder={"请输入密码"} id={"password"} style={{width :200}}/>
+                        密码：<Input type={"password"} placeholder={"请输入密码"} id={"password"} style={{width :200}} prefix={<LockOutlined />} allowClear={true}/>
                     </Row>
 
                     <Row style={{marginBottom: "20px"}}>
                         <div>
-                            密码：<Input type={"password"} placeholder={"请再次输入密码"} id={"repassword"} style={{width :200}}/>
+                            密码：<Input type={"password"} placeholder={"请再次输入密码"} id={"repassword"} style={{width :200}} prefix={<LockOutlined />} allowClear={true}/>
                         </div>
                     </Row>
 
                     <Row style={{marginBottom: "20px"}}>
-                        验证码：<Input placeholder={"请输入验证码"} id={"code"} style={{width :200}}/>&nbsp;&nbsp;&nbsp;
+                        验证码：<Input placeholder={"请输入验证码"} id={"code"} style={{width :200}} allowClear={true}/>&nbsp;&nbsp;&nbsp;
                         <Button type={"primary"} onClick={this.getCode}>获取验证码</Button>
                     </Row>
 

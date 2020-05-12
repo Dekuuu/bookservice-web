@@ -4,6 +4,8 @@ import 'antd/dist/antd.css';
 import {Button, Form, Input, Row,Modal,Select} from "antd";
 import ReactGridManager, {$gridManager} from 'gridmanager-react';
 import 'gridmanager-react/css/gm-react.css';
+import {LockOutlined} from "@ant-design/icons";
+import { MailOutlined  } from '@ant-design/icons';
 const { Option }= Select;
 
 class Account extends React.Component {
@@ -230,9 +232,9 @@ class Account extends React.Component {
                        width={600}
                         destroyOnClose={true}>
 
-                    原来的密码：<Input id={"originPsw"} placeholder={"请输入原来的密码"} type={"password"}/><br/>
-                    新的密码：<Input id={"newPsw"} placeholder={"请输入新的密码"} type={"password"}/>
-                    新的密码：<Input id={"renewPsw"} placeholder={"请重新输入新的密码"} type={"password"}/>
+                    原来的密码：<Input id={"originPsw"} placeholder={"请输入原来的密码"} type={"password"} prefix={<LockOutlined />} allowClear={true}/><br/>
+                    新的密码：<Input id={"newPsw"} placeholder={"请输入新的密码"} type={"password"} prefix={<LockOutlined />} allowClear={true}/>
+                    新的密码：<Input id={"renewPsw"} placeholder={"请重新输入新的密码"} type={"password"} prefix={<LockOutlined />} allowClear={true}/>
                 </Modal>
 
                 <Modal visible={this.state.updateEmail}
@@ -242,7 +244,7 @@ class Account extends React.Component {
                        maskClosable={false}
                        width={600}
                        destroyOnClose={true}>
-                    邮箱：<Input id={"newEmail"} placeholder={"请输入新的邮箱地址"} style={{width :200}}/>
+                    邮箱：<Input id={"newEmail"} placeholder={"请输入新的邮箱地址"} style={{width :200}} prefix={<MailOutlined />} allowClear={true}/>
                 </Modal>
             </div>
         );

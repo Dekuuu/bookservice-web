@@ -3,6 +3,7 @@ import 'antd/dist/antd.css';
 import {Button, Form, Input, Row, Modal, Select, Collapse, Table} from "antd";
 import ReactGridManager, {$gridManager} from 'gridmanager-react';
 import 'gridmanager-react/css/gm-react.css';
+import {SearchOutlined} from "@ant-design/icons";
 const { Option }= Select;
 const Panel = Collapse.Panel;
 
@@ -300,7 +301,7 @@ class Favorite extends React.Component {
                             }
                         </Select>&nbsp;&nbsp;
                             作者：<Input placeholder={"请输入作者"} id={"authorSearch"} style={{width :200}} allowClear={true}/>
-                            <br/> <Button type={"primary"} onClick={this.fetchData}>查询</Button>&nbsp;&nbsp;
+                            <br/> <Button type={"primary"} onClick={this.fetchData} icon={<SearchOutlined />} shape={"circle"}></Button>&nbsp;&nbsp;
                             <Button type={"primary"} onClick={this.reset}>重置</Button>&nbsp;&nbsp;
                         </Panel>
                     </Collapse>

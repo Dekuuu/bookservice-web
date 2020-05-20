@@ -92,6 +92,17 @@ class Favorite extends React.Component {
     componentWillMount(){
         this.getUser();
         this.fetchData();
+        this.getAllDicts();
+    }
+
+    getAllDicts = () => {
+        fetch('/book/bookInfo/getAllDicts')
+            .then(res => res.json())
+            .then(json => {
+                this.setState({
+                    dictsSource: json.data,
+                })
+            });
     }
 
     componentDidMount(){

@@ -375,11 +375,13 @@ class Index extends React.Component {
                 if (json.code === 1) {
                     alert("收藏成功!");
                     this.fetchData();
-                } else {
+                } else if(json.data == "请先登录"){
                     alert(json.data);
                     this.props.history.push({
                         pathname: '/bookservice-web/login'
                     })
+                }else{
+                    alert(json.data);
                 }
             })
     }

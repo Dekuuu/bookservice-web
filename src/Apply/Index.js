@@ -1,17 +1,19 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import {Button, Form, Input, Row, Modal, Select, Collapse, Table,Alert} from "antd";
+import {Button, Form, Input, Row, Modal, Select, Collapse, Table, Alert, Col} from "antd";
 import ReactGridManager, {$gridManager} from 'gridmanager-react';
 import 'gridmanager-react/css/gm-react.css';
 import requestURL from './../config.json';
-import { SearchOutlined  } from '@ant-design/icons';
-import { HeartTwoTone   } from '@ant-design/icons';
+import {SearchOutlined} from '@ant-design/icons';
+import {HeartTwoTone} from '@ant-design/icons';
 import style from './style.less';
 
 const {Option} = Select;
 const Panel = Collapse.Panel;
 
 class Index extends React.Component {
+    formRef = React.createRef();
+
     constructor(props) {
         super(props);
 
@@ -63,7 +65,8 @@ class Index extends React.Component {
                 align: 'center',
                 render: (text, record, index) => {
                     // return <a href={"#"} onClick={this.shoucang.bind(this, record)}>{HeartOutlined }</a>
-                    return <Button onClick={this.shoucang.bind(this, record)} icon={<HeartTwoTone twoToneColor="#eb2f96"/>} shape={"circle"}></Button>
+                    return <Button onClick={this.shoucang.bind(this, record)}
+                                   icon={<HeartTwoTone twoToneColor="#eb2f96"/>} shape={"circle"}></Button>
                 },
             },
         ];
@@ -102,75 +105,8 @@ class Index extends React.Component {
         };
     }
 
-    componentWillMount() {
-        this.fetchData();
-        this.getAllDicts();
-        this.getMonthBorrows();
-    }
-
-    componentDidMount() {
-        document.title = "首页"
-    }
-
-    fetchData = () => {
-        this.setState({
-            loading: true,
-        })
-        let data = {
-            bookName: document.getElementById("bookNameSearch") == null ? '' : document.getElementById("bookNameSearch").value.trim(),
-            categoryNo: this.state.categoryNoSearch,
-            author: document.getElementById("authorSearch") == null ? '' : document.getElementById("authorSearch").value.trim(),
-            startIndex: this.state.pagination.startIndex,
-            endIndex: this.state.pagination.endIndex,
-            pageSize: this.state.pagination.pageSize,
-            currentPage: this.state.pagination.currentPage,
-            total: this.state.pagination.total,
-            state: this.state.stateSearch
-        };
-        fetch(requestURL.requestURL+'/book/bookInfo/queryByGroup', {
-            method: 'post',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)//向服务器发送的数据
-        })
-            .then(res => res.json())
-            .then(json => {
-                this.state.pagination.total = json.data.total;
-                let pagination = this.state.pagination;
-                this.state.pagination = pagination;
-                this.setState({
-                    loading: false,
-                    dataSource: json.data.list,
-                    pagination: {...pagination},
-                }, () => {
-                    console.log("f" + this.state.params);
-                    console.log("f" + pagination.currentPage);
-                })
-            })
-    }
-
-    // 接收子组件表格页码变化后返回的pagination
-    paginationChange(pagination) {
-        this.state.pagination.currentPage = pagination.current
-        this.state.pagination.pageSize = pagination.pageSize
-        this.state.pagination.startIndex = (pagination.current - 1) * pagination.pageSize
-        this.state.pagination.endIndex = pagination.current * pagination.pageSize
-        this.fetchData();
-    }
-
-
-    getMonthBorrows = () => {
-        fetch('/book/borrowinfo/queryBorrowingByMonth')
-            .then(res => res.json())
-            .then(json => {
-                this.setState({
-                    monthBorrowing: json.data
-                })
-            })
-    }
-
     reset = () => {
+        this.formRef.current.resetFields();
         document.getElementById("bookNameSearch").value = '';
         document.getElementById("authorSearch").value = '';
         this.state.categoryNoSearch = '';
@@ -213,6 +149,74 @@ class Index extends React.Component {
             console.log(this.state.pagination);
         });
         this.fetchData();
+    }
+
+    componentWillMount() {
+        this.fetchData();
+        this.getAllDicts();
+        this.getMonthBorrows();
+    }
+
+    componentDidMount() {
+        document.title = "首页"
+    }
+
+    fetchData = () => {
+        this.setState({
+            loading: true,
+        })
+        let data = {
+            bookName: document.getElementById("bookNameSearch") == null ? '' : document.getElementById("bookNameSearch").value.trim(),
+            categoryNo: this.state.categoryNoSearch,
+            author: document.getElementById("authorSearch") == null ? '' : document.getElementById("authorSearch").value.trim(),
+            startIndex: this.state.pagination.startIndex,
+            endIndex: this.state.pagination.endIndex,
+            pageSize: this.state.pagination.pageSize,
+            currentPage: this.state.pagination.currentPage,
+            total: this.state.pagination.total,
+            state: this.state.stateSearch
+        };
+        fetch(requestURL.requestURL + '/book/bookInfo/queryByGroup', {
+            method: 'post',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)//向服务器发送的数据
+        })
+            .then(res => res.json())
+            .then(json => {
+                this.state.pagination.total = json.data.total;
+                let pagination = this.state.pagination;
+                this.state.pagination = pagination;
+                this.setState({
+                    loading: false,
+                    dataSource: json.data.list,
+                    pagination: {...pagination},
+                }, () => {
+                    console.log("f" + this.state.params);
+                    console.log("f" + pagination.currentPage);
+                })
+            })
+    }
+
+    // 接收子组件表格页码变化后返回的pagination
+    paginationChange(pagination) {
+        this.state.pagination.currentPage = pagination.current
+        this.state.pagination.pageSize = pagination.pageSize
+        this.state.pagination.startIndex = (pagination.current - 1) * pagination.pageSize
+        this.state.pagination.endIndex = pagination.current * pagination.pageSize
+        this.fetchData();
+    }
+
+
+    getMonthBorrows = () => {
+        fetch('/book/borrowinfo/queryBorrowingByMonth')
+            .then(res => res.json())
+            .then(json => {
+                this.setState({
+                    monthBorrowing: json.data
+                })
+            })
     }
 
     add = () => {
@@ -375,12 +379,12 @@ class Index extends React.Component {
                 if (json.code === 1) {
                     alert("收藏成功!");
                     this.fetchData();
-                } else if(json.data == "请先登录"){
+                } else if (json.data == "请先登录") {
                     alert(json.data);
                     this.props.history.push({
                         pathname: '/bookservice-web/login'
                     })
-                }else{
+                } else {
                     alert(json.data);
                 }
             })
@@ -390,30 +394,51 @@ class Index extends React.Component {
         return (
             <div style={{paddingTop: 20}}>
                 <div style={{float: "left"}} className={"content"}>
-                    <Form style={{paddingBottom: 30}}>
+                    <Form style={{paddingBottom: 30}} ref={this.formRef}>
                         <Collapse defaultActiveKey={['1']}>
                             <Panel header="首页搜索查询" key="1">
-                                书名：<Input placeholder={"请输入书名"} style={{width: 200}} id={"bookNameSearch"}
-                                          allowClear={true}/>&nbsp;&nbsp;
-                                类目编号：<Select defaultValue={this.state.modalValue.categoryNoName}
-                                             style={{width: 200}}
-                                             id={"categoryNoSearch"}
-                                             onChange={this.onSelectSearch}
-                                             placeholder={"请选择类目编号"}
-                                             allowClear>
-                                {
-                                    this.state.dictsSource.map(d => (
-                                        <Option key={d.categoryNo} value={d.categoryNo}>
-                                            {d.categoryNoName}
-                                        </Option>
-                                    ))
-                                }
-                            </Select>&nbsp;&nbsp;
-                                作者：<Input placeholder={"请输入作者"} id={"authorSearch"} style={{width: 200}}
-                                          allowClear={true}/>
-                                <br/> <Button type={"primary"} onClick={this.fetchData} icon={<SearchOutlined />} shape={"circle"}></Button>&nbsp;&nbsp;
-                                <Button type={"primary"} onClick={this.reset} >重置</Button>&nbsp;&nbsp;
-                                {/*<Button type={"primary"} onClick={this.test}>查询个人借书情况</Button>*/}
+                                <Row gutter={18}>
+                                    <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                        <Form.Item name="bookNameSearch" label="书名">
+                                            <Input placeholder={"请输入书名"} style={{width: 200}} id={"bookNameSearch"}
+                                                   allowClear={true}/>
+                                        </Form.Item>
+                                    </Col>
+
+                                    <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                        <Form.Item name="categoryNoSearch" label="类目编号">
+                                            <Select defaultValue={this.state.modalValue.categoryNoName}
+                                                    style={{width: 200}}
+                                                    id={"categoryNoSearch"}
+                                                    onChange={this.onSelectSearch}
+                                                    placeholder={"请选择类目编号"}
+                                                    allowClear>
+                                                {
+                                                    this.state.dictsSource.map(d => (
+                                                        <Option key={d.categoryNo} value={d.categoryNo}>
+                                                            {d.categoryNoName}
+                                                        </Option>
+                                                    ))
+                                                }
+                                            </Select>
+                                        </Form.Item>
+                                    </Col>
+
+                                    <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                        <Form.Item name="authorSearch" label="作者">
+                                            <Input placeholder={"请输入作者"} id={"authorSearch"} style={{width: 200}}
+                                                   allowClear={true}/>
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+
+                                <Row gutter={18}>
+                                    <Col span={24} style={{textAlign: 'right'}}>
+                                        <Button type={"primary"} onClick={this.fetchData} icon={<SearchOutlined/>}
+                                                shape={"circle"}></Button>&nbsp;&nbsp;
+                                        <Button type={"primary"} onClick={this.reset}>重置</Button>
+                                    </Col>
+                                </Row>
                             </Panel>
                         </Collapse>
                     </Form>

@@ -1,7 +1,7 @@
 import React from 'react';
 import 'antd/dist/antd.css';
 import moment from 'moment';
-import {Button, Form, Input, Row, Modal, Select, Collapse, DatePicker, Table} from "antd";
+import {Button, Form, Input, Row, Modal, Select, Collapse, DatePicker, Table, Col} from "antd";
 import ReactGridManager, {$gridManager} from 'gridmanager-react';
 import 'gridmanager-react/css/gm-react.css';
 import {Redirect} from 'react-router-dom';
@@ -11,6 +11,8 @@ const {Option} = Select;
 const Panel = Collapse.Panel;
 
 class ipLog extends React.Component {
+    formRef = React.createRef();
+
     constructor(props) {
         super(props);
         this.tableColumns = [
@@ -26,7 +28,7 @@ class ipLog extends React.Component {
                 width: 200,
                 align: 'center',
                 render: (text, record, index) => {
-                    return record.loginSuccess === 1 ? '成功':'失败'
+                    return record.loginSuccess === 1 ? '成功' : '失败'
                 },
             },
             {
@@ -40,13 +42,13 @@ class ipLog extends React.Component {
                 dataIndex: 'loginTime',
                 width: 200,
                 align: 'center',
-                render : (text,record,index) => {
-                    return text.substring(0,text.lastIndexOf(" "))
+                render: (text, record, index) => {
+                    return text.substring(0, text.lastIndexOf(" "))
                 }
             },
         ];
         this.state = {
-            loading : false,
+            loading: false,
             loginSuccess: '',
             dateSearch: '',
             user: {},
@@ -88,79 +90,8 @@ class ipLog extends React.Component {
         };
     }
 
-    componentWillMount() {
-        this.getUser();
-        this.fetchData();
-    }
-
-    componentDidMount() {
-        document.title = "IP日志"
-    }
-
-    renewAble = (value) => {
-        this.setState({
-            loginSuccess: value,
-        })
-    }
-
-    //获取用户信息
-    getUser = () => {
-        fetch('/book/logininfo/getUserInfo')
-            .then(res => res.json())
-            .then(json => {
-                if (json.data == null) {
-                    alert("请先登录!");
-                    window.location.href = "/bookservice-web/login";
-                } else if (json.data.userType === 1) {
-                    alert("你没有权限访问当前页面!");
-                    window.location.href = "/bookservice-web/";
-                }
-            });
-    }
-
-    fetchData = () => {
-        this.setState({
-            loading : true,
-        })
-        let data = {
-            loginTimeSearch: this.state.dateSearch === '' ? undefined : this.state.dateSearch,
-            loginSuccess: this.state.loginSuccess === '' ? undefined : this.state.loginSuccess,
-            ip: document.getElementById("ipSearch") == null ? '' : document.getElementById("ipSearch").value.trim(),
-            userName: document.getElementById("userSearch") == null ? '' : document.getElementById("userSearch").value.trim(),
-            startIndex: this.state.pagination.startIndex,
-            endIndex: this.state.pagination.endIndex,
-            pageSize: this.state.pagination.pageSize,
-            currentPage: this.state.pagination.currentPage,
-            total: this.state.pagination.total
-        };
-        fetch('/book/iplog/queryByPage', {
-            method: 'post',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)//向服务器发送的数据
-        }).then(res => res.json())
-            .then(json => {
-                if (json.code === 1) {
-                    this.state.pagination.total = json.data.total;
-                    let pagination = this.state.pagination;
-                    this.state.pagination = pagination;
-                    this.setState({
-                        loading : false,
-                        dataSource: json.data.list,
-                        pagination: {...pagination},
-                    })
-                }
-            })
-    }
-
-    dateSearch = (value) => {
-        this.setState({
-            dateSearch: moment(value).format("YYYY-MM-DD")
-        })
-    }
-
     reset = () => {
+        this.formRef.current.resetFields();
         document.getElementById("ipSearch").value = '';
         document.getElementById("userSearch").value = '';
         this.state.dateSearch = '';
@@ -201,6 +132,78 @@ class ipLog extends React.Component {
             },
         });
         this.fetchData();
+    }
+
+    componentWillMount() {
+        this.getUser();
+        this.fetchData();
+    }
+
+    componentDidMount() {
+        document.title = "IP日志"
+    }
+
+    renewAble = (value) => {
+        this.setState({
+            loginSuccess: value,
+        })
+    }
+
+    //获取用户信息
+    getUser = () => {
+        fetch('/book/logininfo/getUserInfo')
+            .then(res => res.json())
+            .then(json => {
+                if (json.data == null) {
+                    alert("请先登录!");
+                    window.location.href = "/bookservice-web/login";
+                } else if (json.data.userType === 1) {
+                    alert("你没有权限访问当前页面!");
+                    window.location.href = "/bookservice-web/";
+                }
+            });
+    }
+
+    fetchData = () => {
+        this.setState({
+            loading: true,
+        })
+        let data = {
+            loginTimeSearch: this.state.dateSearch === '' ? undefined : this.state.dateSearch,
+            loginSuccess: this.state.loginSuccess === '' ? undefined : this.state.loginSuccess,
+            ip: document.getElementById("ipSearch") == null ? '' : document.getElementById("ipSearch").value.trim(),
+            userName: document.getElementById("userSearch") == null ? '' : document.getElementById("userSearch").value.trim(),
+            startIndex: this.state.pagination.startIndex,
+            endIndex: this.state.pagination.endIndex,
+            pageSize: this.state.pagination.pageSize,
+            currentPage: this.state.pagination.currentPage,
+            total: this.state.pagination.total
+        };
+        fetch('/book/iplog/queryByPage', {
+            method: 'post',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)//向服务器发送的数据
+        }).then(res => res.json())
+            .then(json => {
+                if (json.code === 1) {
+                    this.state.pagination.total = json.data.total;
+                    let pagination = this.state.pagination;
+                    this.state.pagination = pagination;
+                    this.setState({
+                        loading: false,
+                        dataSource: json.data.list,
+                        pagination: {...pagination},
+                    })
+                }
+            })
+    }
+
+    dateSearch = (value) => {
+        this.setState({
+            dateSearch: moment(value).format("YYYY-MM-DD")
+        })
     }
 
     add = () => {
@@ -280,23 +283,50 @@ class ipLog extends React.Component {
     render() {
         return (
             <div style={{paddingTop: 20}}>
-                <Form style={{paddingBottom: 30}}>
+                <Form style={{paddingBottom: 30}} ref={this.formRef}>
                     <Collapse defaultActiveKey={['1']}>
                         <Panel header="登录日志搜索查询" key="1">
-                            ip地址：<Input placeholder={"请输入ip地址"} style={{width: 200}} id={"ipSearch"}
-                                        allowClear={true}/>&nbsp;&nbsp;
-                            登录状态：<Select placeholder={"请选择登录状态"}
-                                         style={{width: 200}}
-                                         onChange={this.renewAble}
-                                         allowClear>
-                            <Option value={"1"}>成功</Option>
-                            <Option value={"0"}>失败</Option>
-                        </Select>&nbsp;&nbsp;
-                            用户名：<Input placeholder={"请输入用户名"} style={{width: 200}} id={"userSearch"}
-                                       allowClear={true}/>&nbsp;&nbsp;
-                            登录日期：<DatePicker placeholder="请选择登陆日期" onChange={this.dateSearch} allowClear/>
-                            <Button type={"primary"} onClick={this.fetchData} icon={<SearchOutlined />} shape={"circle"}></Button>&nbsp;&nbsp;
-                            <Button type={"primary"} onClick={this.reset}>重置</Button>&nbsp;&nbsp;
+                            <Row gutter={24}>
+                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                    <Form.Item name="ipSearch" label="ip地址">
+                                        <Input placeholder={"请输入ip地址"} style={{width: 200}} id={"ipSearch"}
+                                               allowClear={true}/>
+                                    </Form.Item>
+                                </Col>
+
+                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                    <Form.Item name="loginStateSearch" label="登录状态">
+                                        <Select placeholder={"请选择登录状态"}
+                                                style={{width: 200}}
+                                                onChange={this.renewAble}
+                                                allowClear>
+                                            <Option value={"1"}>成功</Option>
+                                            <Option value={"0"}>失败</Option>
+                                        </Select>
+                                    </Form.Item>
+                                </Col>
+
+                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                    <Form.Item name="userSearch" label="用户名">
+                                        <Input placeholder={"请输入用户名"} style={{width: 200}} id={"userSearch"}
+                                               allowClear={true}/>
+                                    </Form.Item>
+                                </Col>
+
+                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                    <Form.Item name="dateSearch" label="登录日期">
+                                        <DatePicker placeholder="请选择登陆日期" onChange={this.dateSearch} allowClear/>
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+
+                            <Row gutter={24}>
+                                <Col span={24} style={{textAlign: 'right'}}>
+                                    <Button type={"primary"} onClick={this.fetchData} icon={<SearchOutlined/>}
+                                            shape={"circle"}></Button>&nbsp;&nbsp;
+                                    <Button type={"primary"} onClick={this.reset}>重置</Button>
+                                </Col>
+                            </Row>
                         </Panel>
                     </Collapse>
                 </Form>
@@ -356,15 +386,15 @@ class ipLog extends React.Component {
                     </tr>
                 </table>*/}
             </div>
-        );
+    );
     }
-}
+    }
 
-/*function fetchData() {
-    fetch('http://localhost:8080/testController/test?id=asd')
-        .then(res => res.json())
-        .then(json => console.log(json.userName))
-}*/
+        /*function fetchData() {
+            fetch('http://localhost:8080/testController/test?id=asd')
+                .then(res => res.json())
+                .then(json => console.log(json.userName))
+        }*/
 
 
-export default ipLog;
+    export default ipLog;

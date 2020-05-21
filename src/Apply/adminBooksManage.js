@@ -1,15 +1,18 @@
 import React from 'react';
 import styles from "./Register.less";
 import 'antd/dist/antd.css';
-import {Button, Form, Input, Row, Modal, Select, Table, Collapse,Alert} from "antd";
+import {Button, Form, Input, Row, Modal, Select, Table, Collapse, Alert, Col} from "antd";
 import ReactGridManager, {$gridManager} from 'gridmanager-react';
 import 'gridmanager-react/css/gm-react.css';
 import {SearchOutlined} from "@ant-design/icons";
+
 const Panel = Collapse.Panel;
 
 const {Option} = Select;
 
 class adminBooksManage extends React.Component {
+    formRef = React.createRef();
+
     constructor(props) {
         super(props);
         this.tableColumns = [
@@ -131,6 +134,51 @@ class adminBooksManage extends React.Component {
         };
     }
 
+    reset = () => {
+        this.formRef.current.resetFields();
+        document.getElementById("bookNoSearch").value = "";
+        document.getElementById("bookNameSearch").value = '';
+        document.getElementById("authorSearch").value = '';
+        this.state.categoryNoSearch = '';
+        this.state.stateSearch = '';
+
+        this.state.pagination.currentPage = 1;
+        this.state.pagination.pageSize = 10;
+        this.state.pagination.startIndex = 0;
+        this.state.pagination.endIndex = 10;
+        this.state.pagination.total = '';
+        this.state.pagination.size = 'small';
+        this.state.pagination.showTotal = (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`;
+        this.state.pagination.showQuickJumper = true;
+        this.state.pagination.hideOnSinglePage = false;
+        this.state.pagination.showSizeChanger = true;
+        this.state.pagination.pageSizeOptions = ['10', '30', '50', '100', '200'];
+        this.setState({
+            stateSearch: '',
+            categoryNoSearch: '',
+            params: {
+                bookNo: '',
+                bookName: '',
+                categoryNo: '',
+                author: '',
+            },
+            pagination: {
+                currentPage: parseInt(window.location.hash.slice(1), 0) || 1,
+                pageSize: 10,
+                total: '', // 总数
+                startIndex: 0,
+                endIndex: 10,
+                size: 'small',
+                showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+                showQuickJumper: true, //	是否可以快速跳转至某页
+                hideOnSinglePage: false, // 只有一页时是否隐藏分页器
+                showSizeChanger: true,  // 是否可以改变 pageSize
+                pageSizeOptions: ['10', '30', '50', '100', '200'],
+            },
+        });
+        this.fetchData();
+    }
+
     componentWillMount() {
         this.getUser();
         this.fetchData();
@@ -208,50 +256,6 @@ class adminBooksManage extends React.Component {
                     pagination: {...pagination},
                 })
             })
-    }
-
-    reset = () => {
-        document.getElementById("bookNoSearch").value = "";
-        document.getElementById("bookNameSearch").value = '';
-        document.getElementById("authorSearch").value = '';
-        this.state.categoryNoSearch = '';
-        this.state.stateSearch = '';
-
-        this.state.pagination.currentPage = 1;
-        this.state.pagination.pageSize = 10;
-        this.state.pagination.startIndex = 0;
-        this.state.pagination.endIndex = 10;
-        this.state.pagination.total = '';
-        this.state.pagination.size = 'small';
-        this.state.pagination.showTotal = (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`;
-        this.state.pagination.showQuickJumper = true;
-        this.state.pagination.hideOnSinglePage = false;
-        this.state.pagination.showSizeChanger = true;
-        this.state.pagination.pageSizeOptions = ['10', '30', '50', '100', '200'];
-        this.setState({
-            stateSearch: '',
-            categoryNoSearch: '',
-            params: {
-                bookNo: '',
-                bookName: '',
-                categoryNo: '',
-                author: '',
-            },
-            pagination: {
-                currentPage: parseInt(window.location.hash.slice(1), 0) || 1,
-                pageSize: 10,
-                total: '', // 总数
-                startIndex: 0,
-                endIndex: 10,
-                size: 'small',
-                showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
-                showQuickJumper: true, //	是否可以快速跳转至某页
-                hideOnSinglePage: false, // 只有一页时是否隐藏分页器
-                showSizeChanger: true,  // 是否可以改变 pageSize
-                pageSizeOptions: ['10', '30', '50', '100', '200'],
-            },
-        });
-        this.fetchData();
     }
 
     add = () => {
@@ -510,19 +514,19 @@ class adminBooksManage extends React.Component {
 
     //借阅提交
     borrowSubmit = () => {
-        let borrowingBookNo =this.state.borrowBookNo;
-        let borrowingName =document.getElementById("userNameBorrow").value;
+        let borrowingBookNo = this.state.borrowBookNo;
+        let borrowingName = document.getElementById("userNameBorrow").value;
 
         //数据校验
-        if(borrowingBookNo == null || borrowingBookNo.trim() === ""){
+        if (borrowingBookNo == null || borrowingBookNo.trim() === "") {
             alert("数据异常，请选择其他书籍");
-            return ;
+            return;
         }
 
         //数据校验
-        if(borrowingName == null || borrowingName.trim() === ""){
+        if (borrowingName == null || borrowingName.trim() === "") {
             alert("请输入借阅人账号");
-            return ;
+            return;
         }
         let data = {
             borrowingBookNo: borrowingBookNo,
@@ -743,44 +747,75 @@ class adminBooksManage extends React.Component {
         return (
             <div>
                 <div style={{float: 'left'}}>
-                    <Form >
+                    <Form style={{paddingBottom: 30}} ref={this.formRef}>
                         <Collapse defaultActiveKey={['1']}>
                             <Panel header="管理员图书信息搜索查询" key="1">
-                                书本编号：<Input placeholder={"请输入书本编号"} style={{width: 200}} id={"bookNoSearch"}
-                                            allowClear={true}/>&nbsp;&nbsp;
-                                书名：<Input placeholder={"请输入书名"} style={{width: 200}} id={"bookNameSearch"}
-                                          allowClear={true}/>&nbsp;&nbsp;
-                                类目编号：<Select defaultValue={this.state.modalValue.categoryNoName}
-                                             style={{width: 200}}
-                                             id={"categoryNoSearch"}
-                                             onChange={this.onSelectSearch}
-                                             placeholder={"请选择类目编号"}
-                                             allowClear>
-                                {
-                                    this.state.dictsSource.map(d => (
-                                        <Option key={d.categoryNo} value={d.categoryNo}>
-                                            {d.categoryNoName}
-                                        </Option>
-                                    ))
-                                }
-                            </Select>&nbsp;&nbsp;
+                                <Row gutter={18}>
+                                    <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                        <Form.Item name="bookNoSearch" label="书本编号">
+                                            <Input placeholder={"请输入书本编号"} style={{width: 200}} id={"bookNoSearch"}
+                                                   allowClear={true}/>
+                                        </Form.Item>
+                                    </Col>
 
-                                作者：<Input placeholder={"请输入作者"} id={"authorSearch"} style={{width: 200}}
-                                          allowClear={true}/>
-                                借出状态：<Select
-                                style={{width: 200}}
-                                id={"stateSearch"}
-                                onChange={this.onSelectSearchState}
-                                placeholder={"请选择借出状态"}
-                                allowClear>
-                                <Option value={1}>已借出</Option>
-                                <Option value={0}>未借出</Option>
-                                <Option value={2}>待审核</Option>
-                                <Option value={3}>未审核</Option>
-                            </Select>&nbsp;&nbsp;
-                                <br/> <Button type={"primary"} onClick={this.fetchData} icon={<SearchOutlined />} shape={"circle"}></Button>&nbsp;&nbsp;
-                                <Button type={"primary"} onClick={this.reset}>重置</Button>&nbsp;&nbsp;
-                                <Button type={"primary"} onClick={this.add}>新增</Button>
+                                    <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                        <Form.Item name="bookNameSearch" label="书名">
+                                            <Input placeholder={"请输入书名"} style={{width: 200}} id={"bookNameSearch"}
+                                                   allowClear={true}/>
+                                        </Form.Item>
+                                    </Col>
+
+                                    <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                        <Form.Item name="categoryNoSearch" label="类目编号">
+                                            <Select defaultValue={this.state.modalValue.categoryNoName}
+                                                    style={{width: 200}}
+                                                    id={"categoryNoSearch"}
+                                                    onChange={this.onSelectSearch}
+                                                    placeholder={"请选择类目编号"}
+                                                    allowClear>
+                                                {
+                                                    this.state.dictsSource.map(d => (
+                                                        <Option key={d.categoryNo} value={d.categoryNo}>
+                                                            {d.categoryNoName}
+                                                        </Option>
+                                                    ))
+                                                }
+                                            </Select>
+                                        </Form.Item>
+                                    </Col>
+
+                                    <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                        <Form.Item name="authorSearch" label="作者">
+                                            <Input placeholder={"请输入作者"} id={"authorSearch"} style={{width: 200}}
+                                                   allowClear={true}/>
+                                        </Form.Item>
+                                    </Col>
+
+                                    <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                        <Form.Item name="stateSearch" label="借出状态">
+                                    <Select
+                                    style={{width: 200}}
+                                    id={"stateSearch"}
+                                    onChange={this.onSelectSearchState}
+                                    placeholder={"请选择借出状态"}
+                                    allowClear>
+                                    <Option value={1}>已借出</Option>
+                                    <Option value={0}>未借出</Option>
+                                    <Option value={2}>待审核</Option>
+                                    <Option value={3}>未审核</Option>
+                                </Select>
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+
+                                <Row gutter={24}>
+                                    <Col span={24} style={{textAlign: 'right'}}>
+                                    <Button type={"primary"} onClick={this.fetchData} icon={<SearchOutlined/>}
+                                                  shape={"circle"}></Button>&nbsp;&nbsp;
+                                    <Button type={"primary"} onClick={this.reset}>重置</Button>&nbsp;&nbsp;
+                                    <Button type={"primary"} onClick={this.add}>新增</Button>
+                                    </Col>
+                                </Row>
                             </Panel>
                         </Collapse>
                     </Form>
@@ -981,19 +1016,19 @@ class adminBooksManage extends React.Component {
                 <div style={{float: 'left'}}>
                     {
                         this.state.unCheckedNum == '' || this.state.unCheckedNum == 0 ? <span></span> :
-                            <Alert message={"您有"+this.state.unCheckedNum+"条书籍信息待审核"} type={"info"}/>
+                            <Alert message={"您有" + this.state.unCheckedNum + "条书籍信息待审核"} type={"info"}/>
                     }
                 </div>
             </div>
-        );
+    );
     }
-}
+    }
 
-/*function fetchData() {
-    fetch('http://localhost:8080/testController/test?id=asd')
-        .then(res => res.json())
-        .then(json => console.log(json.userName))
-}*/
+        /*function fetchData() {
+            fetch('http://localhost:8080/testController/test?id=asd')
+                .then(res => res.json())
+                .then(json => console.log(json.userName))
+        }*/
 
 
-export default adminBooksManage;
+    export default adminBooksManage;

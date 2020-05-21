@@ -1,13 +1,16 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import {Button, Form, Input, Row, Modal, Select, Collapse, Table} from "antd";
+import {Button, Form, Input, Row, Modal, Select, Collapse, Table, Col} from "antd";
 import ReactGridManager, {$gridManager} from 'gridmanager-react';
 import 'gridmanager-react/css/gm-react.css';
 import {SearchOutlined} from "@ant-design/icons";
-const { Option }= Select;
+
+const {Option} = Select;
 const Panel = Collapse.Panel;
 
 class Favorite extends React.Component {
+    formRef = React.createRef();
+
     constructor(props) {
         super(props);
         this.tableColumns = [
@@ -51,27 +54,27 @@ class Favorite extends React.Component {
                 width: 200,
                 align: 'center',
                 render: (text, record, index) => {
-                    return <a href={"#"} onClick={this.cancel.bind(this,record)}>取消</a>
+                    return <a href={"#"} onClick={this.cancel.bind(this, record)}>取消</a>
                 },
             },
         ];
         this.state = {
-            loading : false,
+            loading: false,
             stateSearch: '',
-            categoryNoAdd :'',
-            addModal : false,
-            categoryNoSearch : '',
-            categoryNo : '',
-            updateModal : false,
-            modalValue:{},
-            dataSource:[],
-            dictsSource:[],
+            categoryNoAdd: '',
+            addModal: false,
+            categoryNoSearch: '',
+            categoryNo: '',
+            updateModal: false,
+            modalValue: {},
+            dataSource: [],
+            dictsSource: [],
             modalShow: false,
-            params:{
-                bookNo : '',
-                bookName : '',
-                categoryNo : '',
-                author : '',
+            params: {
+                bookNo: '',
+                bookName: '',
+                categoryNo: '',
+                author: '',
             },
             pagination: {
                 currentPage: parseInt(window.location.hash.slice(1), 0) || 1,
@@ -89,7 +92,51 @@ class Favorite extends React.Component {
         };
     }
 
-    componentWillMount(){
+    reset = () => {
+        this.formRef.current.resetFields();
+        document.getElementById("bookNameSearch").value = '';
+        document.getElementById("authorSearch").value = '';
+        this.state.categoryNoSearch = '';
+        this.state.stateSearch = '';
+
+        this.state.pagination.currentPage = 1;
+        this.state.pagination.pageSize = 10;
+        this.state.pagination.startIndex = 0;
+        this.state.pagination.endIndex = 10;
+        this.state.pagination.total = '';
+        this.state.pagination.size = 'small';
+        this.state.pagination.showTotal = (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`;
+        this.state.pagination.showQuickJumper = true;
+        this.state.pagination.hideOnSinglePage = false;
+        this.state.pagination.showSizeChanger = true;
+        this.state.pagination.pageSizeOptions = ['10', '30', '50', '100', '200'];
+        this.setState({
+            stateSearch: '',
+            categoryNoSearch: '',
+            params: {
+                bookNo: '',
+                bookName: '',
+                categoryNo: '',
+                author: '',
+            },
+            pagination: {
+                currentPage: parseInt(window.location.hash.slice(1), 0) || 1,
+                pageSize: 10,
+                total: '', // 总数
+                startIndex: 0,
+                endIndex: 10,
+                size: 'small',
+                showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+                showQuickJumper: true, //	是否可以快速跳转至某页
+                hideOnSinglePage: false, // 只有一页时是否隐藏分页器
+                showSizeChanger: true,  // 是否可以改变 pageSize
+                pageSizeOptions: ['10', '30', '50', '100', '200'],
+            },
+        });
+        this.fetchData();
+    }
+
+    componentWillMount() {
         this.getUser();
         this.fetchData();
         this.getAllDicts();
@@ -105,54 +152,54 @@ class Favorite extends React.Component {
             });
     }
 
-    componentDidMount(){
+    componentDidMount() {
         document.title = "我的收藏"
     }
 
     //获取用户信息
-    getUser=()=>{
+    getUser = () => {
         fetch('/book/logininfo/getUserInfo')
             .then(res => res.json())
             .then(json => {
-                if(json.data ==null){
+                if (json.data == null) {
                     alert("请先登录!");
-                    window.location.href="/bookservice-web/login";
+                    window.location.href = "/bookservice-web/login";
                 }
             });
     }
 
-    fetchData=()=> {
+    fetchData = () => {
         this.setState({
-            loading :true,
+            loading: true,
         })
-        let data={
-            bookName :document.getElementById("bookNameSearch")==null? '':document.getElementById("bookNameSearch").value.trim(),
-            categoryNo :this.state.categoryNoSearch,
-            author :document.getElementById("authorSearch")==null? '':document.getElementById("authorSearch").value.trim(),
-            startIndex : this.state.pagination.startIndex,
-            endIndex : this.state.pagination.endIndex,
-            pageSize : this.state.pagination.pageSize,
-            currentPage : this.state.pagination.currentPage,
-            total : this.state.pagination.total
+        let data = {
+            bookName: document.getElementById("bookNameSearch") == null ? '' : document.getElementById("bookNameSearch").value.trim(),
+            categoryNo: this.state.categoryNoSearch,
+            author: document.getElementById("authorSearch") == null ? '' : document.getElementById("authorSearch").value.trim(),
+            startIndex: this.state.pagination.startIndex,
+            endIndex: this.state.pagination.endIndex,
+            pageSize: this.state.pagination.pageSize,
+            currentPage: this.state.pagination.currentPage,
+            total: this.state.pagination.total
         };
-        fetch('/book/favorite/queryByPage',{
+        fetch('/book/favorite/queryByPage', {
             method: 'post',
-            headers:{
+            headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(data)//向服务器发送的数据
         }).then(res => res.json())
             .then(json => {
-                if(json.code === 1){
+                if (json.code === 1) {
                     this.state.pagination.total = json.data.total;
                     let pagination = this.state.pagination;
                     this.state.pagination = pagination;
                     this.setState({
-                        loading : false,
+                        loading: false,
                         dataSource: json.data.list,
                         pagination: {...pagination},
                     })
-                }else{
+                } else {
                     alert(json.data);
                 }
             })
@@ -173,147 +220,128 @@ class Favorite extends React.Component {
         blank.location = "/bookservice-web/" + value;
     }
 
-    reset=()=>{
-        document.getElementById("bookNameSearch").value='';
-        document.getElementById("authorSearch").value='';
-        this.state.categoryNoSearch = '';
-        this.state.stateSearch = '';
-
-        this.state.pagination.currentPage = 1;
-        this.state.pagination.pageSize = 10;
-        this.state.pagination.startIndex = 0;
-        this.state.pagination.endIndex = 10;
-        this.state.pagination.total = '';
-        this.state.pagination.size = 'small';
-        this.state.pagination.showTotal = (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`;
-        this.state.pagination.showQuickJumper = true;
-        this.state.pagination.hideOnSinglePage = false;
-        this.state.pagination.showSizeChanger = true;
-        this.state.pagination.pageSizeOptions = ['10', '30', '50', '100', '200'];
+    add = () => {
         this.setState({
-            stateSearch : '',
-            categoryNoSearch : '',
-            params:{
-                bookNo : '',
-                bookName : '',
-                categoryNo : '',
-                author : '',
-            },
-            pagination: {
-                currentPage: parseInt(window.location.hash.slice(1), 0) || 1,
-                pageSize: 10,
-                total: '', // 总数
-                startIndex: 0,
-                endIndex: 10,
-                size: 'small',
-                showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
-                showQuickJumper: true, //	是否可以快速跳转至某页
-                hideOnSinglePage: false, // 只有一页时是否隐藏分页器
-                showSizeChanger: true,  // 是否可以改变 pageSize
-                pageSizeOptions: ['10', '30', '50', '100', '200'],
-            },
-        });
-        this.fetchData();
-    }
-
-    add=()=>{
-        this.setState({
-            addModal : true,
+            addModal: true,
         })
     }
 
-    handleCancel=()=>{
+    handleCancel = () => {
         this.setState({
-            updateModal : false,
-            modalValue : {},
+            updateModal: false,
+            modalValue: {},
         })
     }
 
-    handleCancelAdd=()=>{
+    handleCancelAdd = () => {
         this.setState({
-            addModal : false,
-            modalValue : {},
+            addModal: false,
+            modalValue: {},
         })
     }
 
-    onSelect=(value)=>{
+    onSelect = (value) => {
         this.state.categoryNo = value;
         this.setState({
-            categoryNo : value
+            categoryNo: value
         })
     }
 
-    onSelectAdd=(value)=>{
+    onSelectAdd = (value) => {
         this.state.categoryNo = value;
         this.setState({
-            categoryNoAdd : value
+            categoryNoAdd: value
         })
     }
 
-    onSelectSearch=(value)=>{
+    onSelectSearch = (value) => {
         this.state.categoryNoSearch = value;
         this.setState({
-            categoryNoSearch : value
+            categoryNoSearch: value
         })
     }
 
-    onSelectSearchState=(value)=>{
+    onSelectSearchState = (value) => {
         this.state.stateSearch = value;
         this.setState({
-            stateSearch : value
+            stateSearch: value
         })
     }
 
-    add=()=>{
+    add = () => {
         this.setState({
-            addModal : true,
+            addModal: true,
         })
     }
 
-    cancel=(record)=>{
+    cancel = (record) => {
         let bookName = record.bookName;
-        let data={
-            bookName : bookName
+        let data = {
+            bookName: bookName
         }
-        fetch('/book/favorite/updateFavorite',{
+        fetch('/book/favorite/updateFavorite', {
             method: 'post',
-            headers:{
+            headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(data)//向服务器发送的数据
         }).then(res => res.json())
             .then(json => {
-                if(json.code === 0){
+                if (json.code === 0) {
                     alert(json.data);
                 }
                 this.fetchData();
             })
     }
 
-    render (){
+    render() {
         return (
-            <div style={{paddingTop : 20}}>
-                <Form style={{paddingBottom : 30}}>
+            <div style={{paddingTop: 20}}>
+                <Form style={{paddingBottom: 30}} ref={this.formRef}>
                     <Collapse defaultActiveKey={['1']}>
                         <Panel header="个人收藏搜索查询" key="1">
-                            书名：<Input placeholder={"请输入书名"} style={{width : 200}} id={"bookNameSearch"} allowClear={true}/>&nbsp;&nbsp;
-                            类目编号：<Select defaultValue={this.state.modalValue.categoryNoName}
-                                         style={{width : 200}}
-                                         id={"categoryNoSearch"}
-                                         onChange={this.onSelectSearch}
-                                         placeholder={"请选择类目编号"}
-                                         allowClear>
-                            {
-                                this.state.dictsSource.map(d =>(
-                                    <Option key={d.categoryNo} value={d.categoryNo}>
-                                        {d.categoryNoName}
-                                    </Option>
-                                ))
-                            }
-                        </Select>&nbsp;&nbsp;
-                            作者：<Input placeholder={"请输入作者"} id={"authorSearch"} style={{width :200}} allowClear={true}/>
-                            <br/> <Button type={"primary"} onClick={this.fetchData} icon={<SearchOutlined />} shape={"circle"}></Button>&nbsp;&nbsp;
-                            <Button type={"primary"} onClick={this.reset}>重置</Button>&nbsp;&nbsp;
+                            <Row gutter={18}>
+                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                    <Form.Item name="bookNameSearch" label="书名">
+                                        <Input placeholder={"请输入书名"} style={{width: 200}} id={"bookNameSearch"}
+                                               allowClear={true}/>
+                                    </Form.Item>
+                                </Col>
+
+                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                    <Form.Item name="categoryNoSearch" label="类目编号">
+                                        <Select defaultValue={this.state.modalValue.categoryNoName}
+                                                style={{width: 200}}
+                                                id={"categoryNoSearch"}
+                                                onChange={this.onSelectSearch}
+                                                placeholder={"请选择类目编号"}
+                                                allowClear>
+                                            {
+                                                this.state.dictsSource.map(d => (
+                                                    <Option key={d.categoryNo} value={d.categoryNo}>
+                                                        {d.categoryNoName}
+                                                    </Option>
+                                                ))
+                                            }
+                                        </Select>
+                                    </Form.Item>
+                                </Col>
+
+                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                    <Form.Item name="authorSearch" label="作者">
+                                        <Input placeholder={"请输入作者"} id={"authorSearch"} style={{width: 200}}
+                                               allowClear={true}/>
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+
+                            <Row gutter={18}>
+                                <Col span={24} style={{textAlign: 'right'}}>
+                                    <Button type={"primary"} onClick={this.fetchData} icon={<SearchOutlined/>}
+                                            shape={"circle"}></Button>&nbsp;&nbsp;
+                                    <Button type={"primary"} onClick={this.reset}>重置</Button>
+                                </Col>
+                            </Row>
                         </Panel>
                     </Collapse>
                 </Form>
@@ -353,7 +381,7 @@ class Favorite extends React.Component {
                             }
                             return className;
                         }
-                    } />
+                    }/>
                 {/*<table>
                     <th>书名</th>&nbsp;
                     <th>类目编号</th>&nbsp;
@@ -387,11 +415,11 @@ class Favorite extends React.Component {
                     图书编号：<Input id={"bookNo"} defaultValue={this.state.modalValue.bookNo} readOnly/><br/>
                     书名：<Input id={"bookName"} defaultValue={this.state.modalValue.bookName} readOnly/>
                     类目编号：<Select defaultValue={this.state.modalValue.categoryNoName}
-                                 style={{width : 200}}
+                                 style={{width: 200}}
                                  id={"categoryNo"}
                                  onChange={this.onSelect}>
                     {
-                        this.state.dictsSource.map(d =>(
+                        this.state.dictsSource.map(d => (
                             <Option key={d.categoryNo} value={d.categoryNo}>
                                 {d.categoryNoName}
                             </Option>
@@ -413,13 +441,13 @@ class Favorite extends React.Component {
                        maskClosable={false}
                        width={600}
                        destroyOnClose={true}>
-                    书名：<Input id={"bookNameAdd"} style={{width :200}} placeholder={"请输入书名"}/><br/>
+                    书名：<Input id={"bookNameAdd"} style={{width: 200}} placeholder={"请输入书名"}/><br/>
                     类目编号：<Select
-                    style={{width : 200}}
+                    style={{width: 200}}
                     id={"categoryNo"}
                     onChange={this.onSelectAdd}>
                     {
-                        this.state.dictsSource.map(d =>(
+                        this.state.dictsSource.map(d => (
                             <Option key={d.categoryNo} value={d.categoryNo}>
                                 {d.categoryNoName}
                             </Option>
@@ -429,9 +457,9 @@ class Favorite extends React.Component {
 
                     </Option>
                 </Select><br/>
-                    图片：<Input id={"imageUrlAdd"} placeholder={"请输入图片"} style={{width :200}}/><br/>
-                    书本描述：<Input id={"descriptionAdd"} placeholder={"请输入书本描述"} style={{width :200}}/><br/>
-                    作者：<Input id={"authorAdd"} placeholder={"请输入作者"} style={{width :200}}/><br/>
+                    图片：<Input id={"imageUrlAdd"} placeholder={"请输入图片"} style={{width: 200}}/><br/>
+                    书本描述：<Input id={"descriptionAdd"} placeholder={"请输入书本描述"} style={{width: 200}}/><br/>
+                    作者：<Input id={"authorAdd"} placeholder={"请输入作者"} style={{width: 200}}/><br/>
                 </Modal>
             </div>
         );
@@ -443,7 +471,6 @@ class Favorite extends React.Component {
         .then(res => res.json())
         .then(json => console.log(json.userName))
 }*/
-
 
 
 export default Favorite;

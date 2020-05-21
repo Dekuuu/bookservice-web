@@ -1,14 +1,17 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import {Button, Form, Input, Row, Modal, Select, Collapse, Table} from "antd";
+import {Button, Form, Input, Row, Modal, Select, Collapse, Table, Col} from "antd";
 import ReactGridManager, {$gridManager} from 'gridmanager-react';
 import 'gridmanager-react/css/gm-react.css';
 import {Redirect} from 'react-router-dom';
 import {SearchOutlined} from "@ant-design/icons";
-const { Option }= Select;
+
+const {Option} = Select;
 const Panel = Collapse.Panel;
 
 class Borrowing extends React.Component {
+    formRef = React.createRef();
+
     constructor(props) {
         super(props);
 
@@ -65,7 +68,7 @@ class Borrowing extends React.Component {
                 dataIndex: 'returnState',
                 width: 100,
                 align: 'center',
-                render : (text,record,index) => {
+                render: (text, record, index) => {
                     return text === 0 ? <span style={{color: 'red'}}>未归还</span> :
                         text === 1 ? <span>已归还</span> : <span></span>
                 }
@@ -75,33 +78,33 @@ class Borrowing extends React.Component {
                 width: 200,
                 align: 'center',
                 render: (text, record, index) => {
-                    return record.renewAble === 1 && record.returnState === 0?
-                        <a href={"#"} onClick={this.xujie.bind(this,record.borrowingBookNo)}>续借</a> :
+                    return record.renewAble === 1 && record.returnState === 0 ?
+                        <a href={"#"} onClick={this.xujie.bind(this, record.borrowingBookNo)}>续借</a> :
                         <span></span>
                 },
             },
         ];
         this.state = {
-            returnState : '',
-            loading : false,
-            user : {},
-            renewAble : '',
+            returnState: '',
+            loading: false,
+            user: {},
+            renewAble: '',
             stateSearch: '',
-            categoryNoAdd :'',
-            addModal : false,
-            categoryNoSearch : '',
-            categoryNo : '',
-            updateModal : false,
-            modalValue:{},
-            dataSource:[],
-            dictsSource:[],
+            categoryNoAdd: '',
+            addModal: false,
+            categoryNoSearch: '',
+            categoryNo: '',
+            updateModal: false,
+            modalValue: {},
+            dataSource: [],
+            dictsSource: [],
             modalShow: false,
-            params:{
-                bookNo : '',
-                bookName : '',
-                categoryNo : '',
-                author : '',
-                startIndex : 0,
+            params: {
+                bookNo: '',
+                bookName: '',
+                categoryNo: '',
+                author: '',
+                startIndex: 0,
                 endIndex: 100,
                 pageSize: 100,
                 currentPage: 1,
@@ -123,70 +126,118 @@ class Borrowing extends React.Component {
         };
     }
 
-    componentWillMount(){
+    reset = () => {
+        this.formRef.current.resetFields();
+        document.getElementById("bookNameSearch").value = '';
+        document.getElementById("bookNoSearch").value = '';
+        this.state.categoryNoSearch = '';
+        this.state.stateSearch = '';
+        this.state.renewAble = '';
+        this.state.returnState = '';
+
+        this.state.pagination.currentPage = 1;
+        this.state.pagination.pageSize = 10;
+        this.state.pagination.startIndex = 0;
+        this.state.pagination.endIndex = 10;
+        this.state.pagination.total = '';
+        this.state.pagination.size = 'small';
+        this.state.pagination.showTotal = (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`;
+        this.state.pagination.showQuickJumper = true;
+        this.state.pagination.hideOnSinglePage = false;
+        this.state.pagination.showSizeChanger = true;
+        this.state.pagination.pageSizeOptions = ['10', '30', '50', '100', '200'];
+        this.setState({
+            renewAble: '',
+            stateSearch: '',
+            categoryNoSearch: '',
+            returnState: '',
+            params: {
+                bookNo: '',
+                bookName: '',
+                categoryNo: '',
+                author: '',
+            },
+            pagination: {
+                currentPage: parseInt(window.location.hash.slice(1), 0) || 1,
+                pageSize: 10,
+                total: '', // 总数
+                startIndex: 0,
+                endIndex: 10,
+                size: 'small',
+                showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
+                showQuickJumper: true, //	是否可以快速跳转至某页
+                hideOnSinglePage: false, // 只有一页时是否隐藏分页器
+                showSizeChanger: true,  // 是否可以改变 pageSize
+                pageSizeOptions: ['10', '30', '50', '100', '200'],
+            },
+        });
+        this.fetchData();
+    }
+
+    componentWillMount() {
         this.getUser();
         this.fetchData();
         this.getAllDicts();
     }
 
-    componentDidMount(){
+    componentDidMount() {
         document.title = "我的借阅"
     }
 
-    renewAble=(value)=>{
+    renewAble = (value) => {
         this.setState({
-            renewAble : value,
+            renewAble: value,
         })
     }
 
-    returnState=(value)=>{
+    returnState = (value) => {
         this.setState({
-            returnState : value
+            returnState: value
         })
     }
 
     //获取用户信息
-    getUser=()=>{
+    getUser = () => {
         fetch('/book/logininfo/getUserInfo')
             .then(res => res.json())
             .then(json => {
-                if(json.data ==null){
+                if (json.data == null) {
                     alert("请先登录!");
-                    window.location.href="/bookservice-web/login";
+                    window.location.href = "/bookservice-web/login";
                 }
             });
     }
 
-    fetchData=()=> {
+    fetchData = () => {
         this.setState({
-            loading :true,
+            loading: true,
         })
-        let data={
-            renewAble : this.state.renewAble === ''?undefined : this.state.renewAble,
-            borrowingBookNo : document.getElementById("bookNoSearch")==null?'':document.getElementById("bookNoSearch").value.trim(),
-            borrowingBookNoName : document.getElementById("bookNameSearch")==null?'':document.getElementById("bookNameSearch").value.trim(),
-            returnState :this.state.returnState === ''?undefined : this.state.returnState,
-            startIndex : this.state.pagination.startIndex,
-            endIndex : this.state.pagination.endIndex,
-            pageSize : this.state.pagination.pageSize,
-            currentPage : this.state.pagination.currentPage,
-            total : this.state.pagination.total
+        let data = {
+            renewAble: this.state.renewAble === '' ? undefined : this.state.renewAble,
+            borrowingBookNo: document.getElementById("bookNoSearch") == null ? '' : document.getElementById("bookNoSearch").value.trim(),
+            borrowingBookNoName: document.getElementById("bookNameSearch") == null ? '' : document.getElementById("bookNameSearch").value.trim(),
+            returnState: this.state.returnState === '' ? undefined : this.state.returnState,
+            startIndex: this.state.pagination.startIndex,
+            endIndex: this.state.pagination.endIndex,
+            pageSize: this.state.pagination.pageSize,
+            currentPage: this.state.pagination.currentPage,
+            total: this.state.pagination.total
         };
-        fetch('/book/borrowinfo/queryByPage',{
+        fetch('/book/borrowinfo/queryByPage', {
             method: 'post',
-            headers:{
+            headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(data)//向服务器发送的数据
         }).then(res => res.json())
             .then(json => {
-                if(json.code === 1){
+                if (json.code === 1) {
                     this.state.pagination.total = json.data.total;
                     let pagination = this.state.pagination;
                     this.state.pagination = pagination;
                     this.setState({
-                        loading :false,
-                        dataSource : json.data.list,
+                        loading: false,
+                        dataSource: json.data.list,
                         pagination: {...pagination},
                     })
                 }
@@ -206,51 +257,6 @@ class Borrowing extends React.Component {
     openPic = (value) => {
         let blank = window.open('_blank');
         blank.location = "/bookservice-web/" + value;
-    }
-
-    reset=()=>{
-        document.getElementById("bookNameSearch").value='';
-        document.getElementById("bookNoSearch").value='';
-        this.state.categoryNoSearch = '';
-        this.state.stateSearch = '';
-
-        this.state.pagination.currentPage = 1;
-        this.state.pagination.pageSize = 10;
-        this.state.pagination.startIndex = 0;
-        this.state.pagination.endIndex = 10;
-        this.state.pagination.total = '';
-        this.state.pagination.size = 'small';
-        this.state.pagination.showTotal = (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`;
-        this.state.pagination.showQuickJumper = true;
-        this.state.pagination.hideOnSinglePage = false;
-        this.state.pagination.showSizeChanger = true;
-        this.state.pagination.pageSizeOptions = ['10', '30', '50', '100', '200'];
-        this.setState({
-            renewAble : '',
-            stateSearch : '',
-            categoryNoSearch : '',
-            returnState : '',
-            params:{
-                bookNo : '',
-                bookName : '',
-                categoryNo : '',
-                author : '',
-            },
-            pagination: {
-                currentPage: parseInt(window.location.hash.slice(1), 0) || 1,
-                pageSize: 10,
-                total: '', // 总数
-                startIndex: 0,
-                endIndex: 10,
-                size: 'small',
-                showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条，共 ${total} 条`,
-                showQuickJumper: true, //	是否可以快速跳转至某页
-                hideOnSinglePage: false, // 只有一页时是否隐藏分页器
-                showSizeChanger: true,  // 是否可以改变 pageSize
-                pageSizeOptions: ['10', '30', '50', '100', '200'],
-            },
-        });
-        this.fetchData();
     }
 
     //续借图书
@@ -277,95 +283,123 @@ class Borrowing extends React.Component {
             })
     }
 
-    add=()=>{
+    add = () => {
         this.setState({
-            addModal : true,
+            addModal: true,
         })
     }
 
-    getAllDicts=()=>{
+    getAllDicts = () => {
         fetch('/book/bookInfo/getAllDicts')
             .then(res => res.json())
             .then(json => {
                 this.setState({
-                    dictsSource : json.data,
+                    dictsSource: json.data,
                 })
             });
     }
 
-    handleCancel=()=>{
+    handleCancel = () => {
         this.setState({
-            updateModal : false,
-            modalValue : {},
+            updateModal: false,
+            modalValue: {},
         })
     }
 
-    handleCancelAdd=()=>{
+    handleCancelAdd = () => {
         this.setState({
-            addModal : false,
-            modalValue : {},
+            addModal: false,
+            modalValue: {},
         })
     }
 
-    onSelect=(value)=>{
+    onSelect = (value) => {
         this.state.categoryNo = value;
         this.setState({
-            categoryNo : value
+            categoryNo: value
         })
     }
 
-    onSelectAdd=(value)=>{
+    onSelectAdd = (value) => {
         this.state.categoryNo = value;
         this.setState({
-            categoryNoAdd : value
+            categoryNoAdd: value
         })
     }
 
-    onSelectSearch=(value)=>{
+    onSelectSearch = (value) => {
         this.state.categoryNoSearch = value;
         this.setState({
-            categoryNoSearch : value
+            categoryNoSearch: value
         })
     }
 
-    onSelectSearchState=(value)=>{
+    onSelectSearchState = (value) => {
         this.state.stateSearch = value;
         this.setState({
-            stateSearch : value
+            stateSearch: value
         })
     }
 
-    add=()=>{
+    add = () => {
         this.setState({
-            addModal : true,
+            addModal: true,
         })
     }
 
-    render (){
+    render() {
         return (
-            <div style={{paddingTop : 20}}>
-                <Form style={{paddingBottom : 30}}>
+            <div style={{paddingTop: 20}}>
+                <Form style={{paddingBottom: 30}} ref={this.formRef}>
                     <Collapse defaultActiveKey={['1']}>
                         <Panel header="个人借阅图书搜索查询" key="1">
-                            书本编号：<Input placeholder={"请输入书本编号"} style={{width : 200}} id={"bookNoSearch"} allowClear={true}/>&nbsp;&nbsp;
-                            书名：<Input placeholder={"请输入书名"} style={{width : 200}} id={"bookNameSearch"} allowClear={true}/>&nbsp;&nbsp;
-                            可续借：<Select placeholder={"请选择可续借次数"}
-                                        style={{width : 200}}
-                                        onChange={this.renewAble}
-                        allowClear>
-                                <Option value={"1"}>可续借</Option>
-                                <Option value={"0"}>不可续借</Option>
-                            </Select>&nbsp;&nbsp;
+                            <Row gutter={18}>
+                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                    <Form.Item name="bookNoSearch" label="书本编号">
+                                        <Input placeholder={"请输入书本编号"} style={{width: 200}} id={"bookNoSearch"}
+                                               allowClear={true}/>
+                                    </Form.Item>
+                                </Col>
 
-                            归还状态：<Select placeholder={"请选择归还状态"}
-                                        style={{width : 200}}
-                                        onChange={this.returnState}
-                                        allowClear>
-                            <Option value={"1"}>已归还</Option>
-                            <Option value={"0"}>未归还</Option>
-                        </Select>&nbsp;&nbsp;
-                            <Button type={"primary"} onClick={this.fetchData} icon={<SearchOutlined />} shape={"circle"}></Button>&nbsp;&nbsp;
-                            <Button type={"primary"} onClick={this.reset}>重置</Button>&nbsp;&nbsp;
+                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                    <Form.Item name="bookNameSearch" label="书名">
+                                        <Input placeholder={"请输入书名"} style={{width: 200}} id={"bookNameSearch"}
+                                               allowClear={true}/>
+                                    </Form.Item>
+                                </Col>
+
+                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                    <Form.Item name="renewAbleSearch" label="可续借状态">
+                                        <Select placeholder={"请选择可续借次数"}
+                                                style={{width: 200}}
+                                                onChange={this.renewAble}
+                                                allowClear>
+                                            <Option value={"1"}>可续借</Option>
+                                            <Option value={"0"}>不可续借</Option>
+                                        </Select>
+                                    </Form.Item>
+                                </Col>
+
+                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                    <Form.Item name="returnStateSearch" label="归还状态">
+                                        <Select placeholder={"请选择归还状态"}
+                                                style={{width: 200}}
+                                                onChange={this.returnState}
+                                                allowClear>
+                                            <Option value={"1"}>已归还</Option>
+                                            <Option value={"0"}>未归还</Option>
+                                        </Select>
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+
+                            <Row gutter={18}>
+                                <Col span={24} style={{textAlign: 'right'}}>
+                                    <Button type={"primary"} onClick={this.fetchData} icon={<SearchOutlined/>}
+                                            shape={"circle"}></Button>&nbsp;&nbsp;
+                                    <Button type={"primary"} onClick={this.reset}>重置</Button>
+                                </Col>
+                            </Row>
                         </Panel>
                     </Collapse>
                 </Form>
@@ -405,7 +439,7 @@ class Borrowing extends React.Component {
                             }
                             return className;
                         }
-                    } />
+                    }/>
                 {/*<table>
                     <th>书本编号</th>&nbsp;
                     <th>书名</th>&nbsp;
@@ -441,11 +475,11 @@ class Borrowing extends React.Component {
                     图书编号：<Input id={"bookNo"} defaultValue={this.state.modalValue.bookNo} readOnly/><br/>
                     书名：<Input id={"bookName"} defaultValue={this.state.modalValue.bookName} readOnly/>
                     类目编号：<Select defaultValue={this.state.modalValue.categoryNoName}
-                                 style={{width : 200}}
+                                 style={{width: 200}}
                                  id={"categoryNo"}
                                  onChange={this.onSelect}>
                     {
-                        this.state.dictsSource.map(d =>(
+                        this.state.dictsSource.map(d => (
                             <Option key={d.categoryNo} value={d.categoryNo}>
                                 {d.categoryNoName}
                             </Option>
@@ -467,13 +501,13 @@ class Borrowing extends React.Component {
                        maskClosable={false}
                        width={600}
                        destroyOnClose={true}>
-                    书名：<Input id={"bookNameAdd"} style={{width :200}} placeholder={"请输入书名"}/><br/>
+                    书名：<Input id={"bookNameAdd"} style={{width: 200}} placeholder={"请输入书名"}/><br/>
                     类目编号：<Select
-                    style={{width : 200}}
+                    style={{width: 200}}
                     id={"categoryNo"}
                     onChange={this.onSelectAdd}>
                     {
-                        this.state.dictsSource.map(d =>(
+                        this.state.dictsSource.map(d => (
                             <Option key={d.categoryNo} value={d.categoryNo}>
                                 {d.categoryNoName}
                             </Option>
@@ -483,9 +517,9 @@ class Borrowing extends React.Component {
 
                     </Option>
                 </Select><br/>
-                    图片：<Input id={"imageUrlAdd"} placeholder={"请输入图片"} style={{width :200}}/><br/>
-                    书本描述：<Input id={"descriptionAdd"} placeholder={"请输入书本描述"} style={{width :200}}/><br/>
-                    作者：<Input id={"authorAdd"} placeholder={"请输入作者"} style={{width :200}}/><br/>
+                    图片：<Input id={"imageUrlAdd"} placeholder={"请输入图片"} style={{width: 200}}/><br/>
+                    书本描述：<Input id={"descriptionAdd"} placeholder={"请输入书本描述"} style={{width: 200}}/><br/>
+                    作者：<Input id={"authorAdd"} placeholder={"请输入作者"} style={{width: 200}}/><br/>
                 </Modal>
             </div>
         );
@@ -497,7 +531,6 @@ class Borrowing extends React.Component {
         .then(res => res.json())
         .then(json => console.log(json.userName))
 }*/
-
 
 
 export default Borrowing;

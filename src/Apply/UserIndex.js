@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from "./Register.less";
 import 'antd/dist/antd.css';
-import {Button, Form, Input, Row, Modal, Select, Collapse, Table} from "antd";
+import {Button, Form, Input, Row, Modal, Select, Collapse, Table, Col} from "antd";
 import ReactGridManager, {$gridManager} from 'gridmanager-react';
 import 'gridmanager-react/css/gm-react.css';
 import {SearchOutlined} from "@ant-design/icons";
@@ -10,6 +10,8 @@ const {Option} = Select;
 const Panel = Collapse.Panel;
 
 class UserIndex extends React.Component {
+    formRef = React.createRef();
+
     constructor(props) {
         super(props);
 
@@ -81,7 +83,7 @@ class UserIndex extends React.Component {
             },*/
         ];
         this.state = {
-            loading : false,
+            loading: false,
             reCheckModal: false,
             reCheckNo: '',
             addImage: '',
@@ -117,71 +119,8 @@ class UserIndex extends React.Component {
         };
     }
 
-    componentWillMount() {
-        this.fetchData();
-        this.getAllDicts();
-        this.getUser();
-    }
-
-    componentDidMount() {
-        document.title = "用户图书管理"
-    }
-
-    //获取用户信息
-    getUser = () => {
-        fetch('/book/logininfo/getUserInfo')
-            .then(res => res.json())
-            .then(json => {
-                if (json.data == null) {
-                    alert("请先登录!");
-                    window.location.href = "/bookservice-web/login";
-                }
-            });
-    }
-
-    //打开图片
-    openPic = (value) => {
-        let blank = window.open('_blank');
-        blank.location = "/bookservice-web/" + value;
-    }
-
-    fetchData = () => {
-        this.setState({
-            loading :true,
-        })
-        let data = {
-            bookNo: document.getElementById("bookNoSearch") == null ? '' : document.getElementById("bookNoSearch").value.trim(),
-            bookName: document.getElementById("bookNameSearch") == null ? '' : document.getElementById("bookNameSearch").value.trim(),
-            categoryNo: this.state.categoryNoSearch,
-            author: document.getElementById("authorSearch") == null ? '' : document.getElementById("authorSearch").value.trim(),
-            startIndex: this.state.pagination.startIndex,
-            endIndex: this.state.pagination.endIndex,
-            pageSize: this.state.pagination.pageSize,
-            currentPage: this.state.pagination.currentPage,
-            total: this.state.pagination.total,
-            state: this.state.stateSearch
-        };
-        fetch('/book/bookInfo/queryByPage', {
-            method: 'post',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)//向服务器发送的数据
-        })
-            .then(res => res.json())
-            .then(json => {
-                this.state.pagination.total = json.data.total;
-                let pagination = this.state.pagination;
-                this.state.pagination = pagination;
-                this.setState({
-                    loading : false,
-                    dataSource: json.data.list,
-                    pagination: {...pagination},
-                })
-            })
-    }
-
     reset = () => {
+        this.formRef.current.resetFields();
         document.getElementById("bookNoSearch").value = "";
         document.getElementById("bookNameSearch").value = '';
         document.getElementById("authorSearch").value = '';
@@ -221,10 +160,74 @@ class UserIndex extends React.Component {
                 showSizeChanger: true,  // 是否可以改变 pageSize
                 pageSizeOptions: ['10', '30', '50', '100', '200'],
             },
-        },() => {
+        }, () => {
             console.log(this.state.pagination);
         });
         this.fetchData();
+    }
+
+    componentWillMount() {
+        this.fetchData();
+        this.getAllDicts();
+        this.getUser();
+    }
+
+    componentDidMount() {
+        document.title = "用户图书管理"
+    }
+
+    //获取用户信息
+    getUser = () => {
+        fetch('/book/logininfo/getUserInfo')
+            .then(res => res.json())
+            .then(json => {
+                if (json.data == null) {
+                    alert("请先登录!");
+                    window.location.href = "/bookservice-web/login";
+                }
+            });
+    }
+
+    //打开图片
+    openPic = (value) => {
+        let blank = window.open('_blank');
+        blank.location = "/bookservice-web/" + value;
+    }
+
+    fetchData = () => {
+        this.setState({
+            loading: true,
+        })
+        let data = {
+            bookNo: document.getElementById("bookNoSearch") == null ? '' : document.getElementById("bookNoSearch").value.trim(),
+            bookName: document.getElementById("bookNameSearch") == null ? '' : document.getElementById("bookNameSearch").value.trim(),
+            categoryNo: this.state.categoryNoSearch,
+            author: document.getElementById("authorSearch") == null ? '' : document.getElementById("authorSearch").value.trim(),
+            startIndex: this.state.pagination.startIndex,
+            endIndex: this.state.pagination.endIndex,
+            pageSize: this.state.pagination.pageSize,
+            currentPage: this.state.pagination.currentPage,
+            total: this.state.pagination.total,
+            state: this.state.stateSearch
+        };
+        fetch('/book/bookInfo/queryByPage', {
+            method: 'post',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)//向服务器发送的数据
+        })
+            .then(res => res.json())
+            .then(json => {
+                this.state.pagination.total = json.data.total;
+                let pagination = this.state.pagination;
+                this.state.pagination = pagination;
+                this.setState({
+                    loading: false,
+                    dataSource: json.data.list,
+                    pagination: {...pagination},
+                })
+            })
     }
 
     add = () => {
@@ -510,43 +513,75 @@ class UserIndex extends React.Component {
     render() {
         return (
             <div>
-                <Form action={"/book/bookInfo/queryByPage"}>
+                <Form ref={this.formRef} style={{paddingBottom: 30}}>
                     <Collapse defaultActiveKey={['1']}>
                         <Panel header="个人捐赠图书搜索查询" key="1">
-                            书本编号：<Input placeholder={"请输入书本编号"} style={{width: 200}} id={"bookNoSearch"}
-                                        allowClear={true}/>&nbsp;&nbsp;
-                            书名：<Input placeholder={"请输入书名"} style={{width: 200}} id={"bookNameSearch"}
-                                      allowClear={true}/>&nbsp;&nbsp;
-                            类目编号：<Select defaultValue={this.state.modalValue.categoryNoName}
-                                         style={{width: 200}}
-                                         id={"categoryNoSearch"}
-                                         onChange={this.onSelectSearch}
-                                         placeholder={"请选择类目编号"}
-                                         allowClear>
-                            {
-                                this.state.dictsSource.map(d => (
-                                    <Option key={d.categoryNo} value={d.categoryNo}>
-                                        {d.categoryNoName}
-                                    </Option>
-                                ))
-                            }
-                        </Select>&nbsp;&nbsp;
+                            <Row gutter={18}>
+                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                    <Form.Item name="bookNoSearch" label="书本编号">
+                                        <Input placeholder={"请输入书本编号"} style={{width: 200}} id={"bookNoSearch"}
+                                               allowClear={true}/>
+                                    </Form.Item>
+                                </Col>
 
-                            作者：<Input placeholder={"请输入作者"} id={"authorSearch"} style={{width: 200}} allowClear={true}/>
-                            借出状态：<Select
-                            style={{width: 200}}
-                            id={"stateSearch"}
-                            onChange={this.onSelectSearchState}
-                            placeholder={"请选择借出状态"}
-                            allowClear>
-                            <Option value={1}>已借出</Option>
-                            <Option value={0}>未借出</Option>
-                            <Option value={2}>待审核</Option>
-                            <Option value={3}>审核失败</Option>
-                        </Select>&nbsp;&nbsp;
-                            <br/> <Button type={"primary"} onClick={this.fetchData} icon={<SearchOutlined />} shape={"circle"}></Button>&nbsp;&nbsp;
-                            <Button type={"primary"} onClick={this.reset}>重置</Button>&nbsp;&nbsp;
-                            <Button type={"primary"} onClick={this.add}>新增</Button>
+                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                    <Form.Item name="bookNameSearch" label="书名">
+                                        <Input placeholder={"请输入书名"} style={{width: 200}} id={"bookNameSearch"}
+                                               allowClear={true}/>
+                                    </Form.Item>
+                                </Col>
+
+                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                    <Form.Item name="categoryNoSearch" label="类目编号">
+                                        <Select defaultValue={this.state.modalValue.categoryNoName}
+                                                style={{width: 200}}
+                                                id={"categoryNoSearch"}
+                                                onChange={this.onSelectSearch}
+                                                placeholder={"请选择类目编号"}
+                                                allowClear>
+                                            {
+                                                this.state.dictsSource.map(d => (
+                                                    <Option key={d.categoryNo} value={d.categoryNo}>
+                                                        {d.categoryNoName}
+                                                    </Option>
+                                                ))
+                                            }
+                                        </Select>
+                                    </Form.Item>
+                                </Col>
+
+                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                    <Form.Item name="authorSearch" label="作者">
+                                        <Input placeholder={"请输入作者"} id={"authorSearch"} style={{width: 200}}
+                                               allowClear={true}/>
+                                    </Form.Item>
+                                </Col>
+
+                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                    <Form.Item name="stateSearch" label="借出状态">
+                                        <Select
+                                            style={{width: 200}}
+                                            id={"stateSearch"}
+                                            onChange={this.onSelectSearchState}
+                                            placeholder={"请选择借出状态"}
+                                            allowClear>
+                                            <Option value={1}>已借出</Option>
+                                            <Option value={0}>未借出</Option>
+                                            <Option value={2}>待审核</Option>
+                                            <Option value={3}>审核失败</Option>
+                                        </Select>
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+
+                            <Row gutter={18}>
+                                <Col span={24} style={{textAlign: 'right'}}>
+                                    <Button type={"primary"} onClick={this.fetchData} icon={<SearchOutlined/>}
+                                            shape={"circle"}></Button>&nbsp;&nbsp;
+                                    <Button type={"primary"} onClick={this.reset}>重置</Button>&nbsp;&nbsp;
+                                    <Button type={"primary"} onClick={this.add}>新增</Button>
+                                </Col>
+                            </Row>
                         </Panel>
                     </Collapse>
                 </Form>
@@ -586,7 +621,7 @@ class UserIndex extends React.Component {
                             }
                             return className;
                         }
-                    } />
+                    }/>
                 {/*<table>
                     <th>书本编号</th>
                     &nbsp;

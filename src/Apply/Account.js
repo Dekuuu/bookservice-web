@@ -1,40 +1,41 @@
 import React from 'react';
 import styles from "./Register.less";
 import 'antd/dist/antd.css';
-import {Button, Form, Input, Row,Modal,Select} from "antd";
+import {Button, Form, Input, Row, Modal, Select} from "antd";
 import ReactGridManager, {$gridManager} from 'gridmanager-react';
 import 'gridmanager-react/css/gm-react.css';
 import {LockOutlined} from "@ant-design/icons";
-import { MailOutlined  } from '@ant-design/icons';
-const { Option }= Select;
+import {MailOutlined} from '@ant-design/icons';
+
+const {Option} = Select;
 
 class Account extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            newPassword : '',
-            user : {
-                userName : '',
-                password : '',
-                email : ''
+            newPassword: '',
+            user: {
+                userName: '',
+                password: '',
+                email: ''
             },
             stateSearch: '',
-            categoryNoAdd :'',
-            updateEmail : false,
-            categoryNoSearch : '',
-            categoryNo : '',
-            updatePswModal : false,
-            modalValue:{},
-            dataSource:[],
-            dictsSource:[],
+            categoryNoAdd: '',
+            updateEmail: false,
+            categoryNoSearch: '',
+            categoryNo: '',
+            updatePswModal: false,
+            modalValue: {},
+            dataSource: [],
+            dictsSource: [],
             modalShow: false,
-            params:{
-                bookNo : '',
-                bookName : '',
-                categoryNo : '',
-                author : '',
-                startIndex : 0,
+            params: {
+                bookNo: '',
+                bookName: '',
+                categoryNo: '',
+                author: '',
+                startIndex: 0,
                 endIndex: 100,
                 pageSize: 100,
                 currentPage: 1,
@@ -54,173 +55,176 @@ class Account extends React.Component {
         };
     }
 
-    componentWillMount(){
+    componentWillMount() {
         this.getUser();
     }
 
-    componentDidMount(){
+    componentDidMount() {
         document.title = "我的账户"
     }
 
-    add=()=>{
+    add = () => {
         this.setState({
-            updateEmail : true,
+            updateEmail: true,
         })
     }
 
     //获取用户信息
-    getUser=()=>{
+    getUser = () => {
         fetch('/book/logininfo/getUserInfo')
             .then(res => res.json())
             .then(json => {
-                if(json.data!=null){
+                if (json.data != null) {
                     this.setState({
-                        user : {
-                            userName : json.data.userName,
-                            password : "*************",
-                            email : json.data.email
+                        user: {
+                            userName: json.data.userName,
+                            password: "*************",
+                            email: json.data.email
                         },
-                    },()=>{
+                    }, () => {
                         console.log(this.state.user);
                     });
-                }else{
+                } else {
                     alert("请先登录!");
-                    window.location.href="/bookservice-web/login";
+                    window.location.href = "/bookservice-web/login";
                 }
             });
     }
 
-    handleCancel=()=>{
+    handleCancel = () => {
         this.setState({
-            updatePswModal : false,
-            modalValue : {},
+            updatePswModal: false,
+            modalValue: {},
         })
     }
 
-    updatePsw=()=>{
+    updatePsw = () => {
         this.setState({
-            updatePswModal : true,
+            updatePswModal: true,
         })
     }
 
-    handleCancelAdd=()=>{
+    handleCancelAdd = () => {
         this.setState({
-            updateEmail : false,
-            modalValue : {},
+            updateEmail: false,
+            modalValue: {},
         })
     }
 
-    updateEmailSubmit=()=>{
+    updateEmailSubmit = () => {
         let newEmail = document.getElementById("newEmail").value;
 
         //校验邮箱格式
         let regex = /^([0-9a-zA-Z])+\@([0-9a-zA-Z])+((\.com)|(\.cn)){1,2}$/;
 
-        if(!regex.test(newEmail)){
+        if (!regex.test(newEmail)) {
             alert("请输入正确的邮箱!");
-            return ;
+            return;
         }
         let data = {
-            email : newEmail
+            email: newEmail
         }
         fetch('/book/logininfo/updateEmail', {
             method: 'post',
-            headers:{
+            headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(data)//向服务器发送的数据
-        }).then(res =>res.json())
+        }).then(res => res.json())
             .then(json => {
-                if(json.code === 0){
+                if (json.code === 0) {
                     alert(json.data);
-                }else if(json.code === 1){
+                } else if (json.code === 1) {
                     alert("邮件发送成功，请尽快登录邮箱完成验证");
                 }
                 this.setState({
-                    updateEmail : false,
+                    updateEmail: false,
                 })
             })
     }
 
-    updatePswSubmit=()=>{
+    updatePswSubmit = () => {
         let originPsw = document.getElementById("originPsw").value;
         let newPsw = document.getElementById("newPsw").value;
         let renewPsw = document.getElementById("renewPsw").value;
 
-        if(originPsw == null || originPsw.trim() === ""){
+        if (originPsw == null || originPsw.trim() === "") {
             alert("旧密码不能为空!");
-            return ;
+            return;
         }
 
-        if(newPsw == null || newPsw.trim() === ""){
+        if (newPsw == null || newPsw.trim() === "") {
             alert("新密码不能为空!");
-            return ;
+            return;
         }
 
-        if(renewPsw == null || renewPsw.trim() === ""){
+        if (renewPsw == null || renewPsw.trim() === "") {
             alert("新密码不能为空!");
-            return ;
+            return;
         }
 
-        if(newPsw !== renewPsw){
+        if (newPsw !== renewPsw) {
             alert("两次输入的密码不一致!");
-            return ;
+            return;
         }
-        let data={
-            originPsw : originPsw,
-            newPsw : newPsw,
+        let data = {
+            originPsw: originPsw,
+            newPsw: newPsw,
         }
         fetch('/book/logininfo/updatePsw', {
             method: 'post',
-            headers:{
+            headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(data)//向服务器发送的数据
-        }).then(res =>res.json())
+        }).then(res => res.json())
             .then(json => {
-                if(json.code === 1 && json.data === 1){
+                if (json.code === 1 && json.data === 1) {
                     alert("修改成功");
                     window.location.href = "/bookservice-web/login";
-                }else if(json.code === 1 && json.data === 0){
+                } else if (json.code === 1 && json.data === 0) {
                     alert("密码错误");
-                }else if(json.data === "请先登录"){
+                } else if (json.data === "请先登录") {
                     alert(json.data);
                     window.location.href = "/bookservice-web/login";
-                }else{
+                } else {
                     alert(json.data);
                 }
                 this.setState({
-                    updatePswModal : false,
+                    updatePswModal: false,
                 })
             })
     }
 
-    updateEmail=()=>{
+    updateEmail = () => {
         this.setState({
-            updateEmail : true,
+            updateEmail: true,
         })
     }
 
-    add=()=>{
+    add = () => {
         this.setState({
-            updateEmail : true,
+            updateEmail: true,
         })
     }
 
-    render (){
+    render() {
         return (
-            <div style={{margin : "0 auto", width : 600}}>
-                <Form >
-                    <Row style={{paddingBottom : 20}}>
-                        账号：<Input style={{width : 200}} id={"userName"} value={this.state.user.userName} readOnly/>&nbsp;&nbsp;
+            <div style={{margin: "0 auto", width: 600}}>
+                <Form>
+                    <Row style={{paddingBottom: 20}}>
+                        账号：<Input style={{width: 200}} id={"userName"} value={this.state.user.userName}
+                                  readOnly/>&nbsp;&nbsp;
                     </Row>
 
-                    <Row style={{paddingBottom : 20}}>
-                        密码：<Input style={{width : 200}} id={"password"} value={this.state.user.password} readOnly/>&nbsp;&nbsp;<a href={"#"} onClick={this.updatePsw}>修改</a>
+                    <Row style={{paddingBottom: 20}}>
+                        密码：<Input style={{width: 200}} id={"password"} value={this.state.user.password}
+                                  readOnly/>&nbsp;&nbsp;<a href={"#"} onClick={this.updatePsw}>修改</a>
                     </Row>
 
-                    <Row style={{paddingBottom : 20}}>
-                        邮箱：<Input style={{width : 200}} id={"email"} value={this.state.user.email} readOnly/><a href={"#"} onClick={this.updateEmail}>修改</a>
+                    <Row style={{paddingBottom: 20}}>
+                        邮箱：<Input style={{width: 200}} id={"email"} value={this.state.user.email} readOnly/>&nbsp;&nbsp;
+                        <a href={"#"} onClick={this.updateEmail}>修改</a>
                     </Row>
                 </Form>
 
@@ -230,11 +234,14 @@ class Account extends React.Component {
                        onOk={this.updatePswSubmit}
                        maskClosable={false}
                        width={600}
-                        destroyOnClose={true}>
+                       destroyOnClose={true}>
 
-                    原来的密码：<Input id={"originPsw"} placeholder={"请输入原来的密码"} type={"password"} prefix={<LockOutlined />} allowClear={true}/><br/>
-                    新的密码：<Input id={"newPsw"} placeholder={"请输入新的密码"} type={"password"} prefix={<LockOutlined />} allowClear={true}/>
-                    新的密码：<Input id={"renewPsw"} placeholder={"请重新输入新的密码"} type={"password"} prefix={<LockOutlined />} allowClear={true}/>
+                    原来的密码：<Input id={"originPsw"} placeholder={"请输入原来的密码"} type={"password"} prefix={<LockOutlined/>}
+                                 allowClear={true} style={{width: 200 , marginBottom : 10}}/><br/>
+                    新的密码：<Input id={"newPsw"} placeholder={"请输入新的密码"} type={"password"} prefix={<LockOutlined/>}
+                                allowClear={true} style={{width: 200 , marginBottom : 10}}/><br/>
+                    新的密码：<Input id={"renewPsw"} placeholder={"请重新输入新的密码"} type={"password"} prefix={<LockOutlined/>}
+                                allowClear={true} style={{width: 200 , marginBottom : 10}}/>
                 </Modal>
 
                 <Modal visible={this.state.updateEmail}
@@ -244,7 +251,8 @@ class Account extends React.Component {
                        maskClosable={false}
                        width={600}
                        destroyOnClose={true}>
-                    邮箱：<Input id={"newEmail"} placeholder={"请输入新的邮箱地址"} style={{width :200}} prefix={<MailOutlined />} allowClear={true}/>
+                    邮箱：<Input id={"newEmail"} placeholder={"请输入新的邮箱地址"} style={{width: 200}} prefix={<MailOutlined/>}
+                              allowClear={true}/>
                 </Modal>
             </div>
         );
@@ -256,7 +264,6 @@ class Account extends React.Component {
         .then(res => res.json())
         .then(json => console.log(json.userName))
 }*/
-
 
 
 export default Account;

@@ -36,7 +36,7 @@ class Index extends React.Component {
                 align: 'center',
             },
             {
-                title: '类目编号',
+                title: '类目',
                 dataIndex: 'categoryNoName',
                 width: 200,
                 align: 'center',
@@ -406,12 +406,12 @@ class Index extends React.Component {
                                     </Col>
 
                                     <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
-                                        <Form.Item name="categoryNoSearch" label="类目编号">
+                                        <Form.Item name="categoryNoSearch" label="类目">
                                             <Select defaultValue={this.state.modalValue.categoryNoName}
                                                     style={{width: 200}}
                                                     id={"categoryNoSearch"}
                                                     onChange={this.onSelectSearch}
-                                                    placeholder={"请选择类目编号"}
+                                                    placeholder={"请选择类目"}
                                                     allowClear>
                                                 {
                                                     this.state.dictsSource.map(d => (
@@ -479,28 +479,6 @@ class Index extends React.Component {
                                 return className;
                             }
                         }>
-                        {/*<th>书名</th>&nbsp;
-                        <th>类目编号</th>&nbsp;
-                        <th>图片地址</th>&nbsp;
-                        <th>书本描述</th>&nbsp;
-                        <th>作者</th>&nbsp;
-                        <th>可借阅书籍数量</th>&nbsp;
-                        <th>操作</th>&nbsp;
-                        {this.state.dataSource.map(record =>(
-                            <tr style={{}}>
-                                <td>{record.bookName}</td>&nbsp;&nbsp;
-                                <td>{record.categoryNoName}</td>&nbsp;&nbsp;
-                                <td><img src={"/bookservice-web/"+record.imageUrl} /></td>&nbsp;&nbsp;
-                                <td>{record.description}</td>&nbsp;&nbsp;
-                                <td>{record.author}</td>&nbsp;&nbsp;
-                                <td>{record.counts}</td>&nbsp;&nbsp;
-                                <td><a href={"#"} onClick={this.shoucang.bind(this,record)}>收藏</a></td>&nbsp;&nbsp;
-                            </tr>
-                        ))}
-                        <tr>
-                            <td><a onClick={this.upperPage}>上一页</a></td>&nbsp;&nbsp;
-                            <a onClick={this.lowerPage}>下一页</a>
-                        </tr>*/}
                     </Table>
 
                     <Modal visible={this.state.updateModal}
@@ -512,10 +490,10 @@ class Index extends React.Component {
 
                         图书编号：<Input id={"bookNo"} defaultValue={this.state.modalValue.bookNo} readOnly/><br/>
                         书名：<Input id={"bookName"} defaultValue={this.state.modalValue.bookName} readOnly/>
-                        类目编号：<Select defaultValue={this.state.modalValue.categoryNoName}
-                                     style={{width: 200}}
-                                     id={"categoryNo"}
-                                     onChange={this.onSelect}>
+                        类目：<Select defaultValue={this.state.modalValue.categoryNoName}
+                                   style={{width: 200}}
+                                   id={"categoryNo"}
+                                   onChange={this.onSelect}>
                         {
                             this.state.dictsSource.map(d => (
                                 <Option key={d.categoryNo} value={d.categoryNo}>
@@ -540,7 +518,7 @@ class Index extends React.Component {
                            width={600}
                            destroyOnClose={true}>
                         书名：<Input id={"bookNameAdd"} style={{width: 200}} placeholder={"请输入书名"}/><br/>
-                        类目编号：<Select
+                        类目：<Select
                         style={{width: 200}}
                         id={"categoryNo"}
                         onChange={this.onSelectAdd}>

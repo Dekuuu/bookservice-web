@@ -486,16 +486,16 @@ class adminUserManage extends React.Component {
                        width={600}
                        destroyOnClose={true}>
 
-                    用户名：<Input id={"userName"} defaultValue={this.state.modalValue.userName} readOnly allowClear={true} prefix={<UserOutlined />}/><br/>
+                    用户名：<Input id={"userName"} defaultValue={this.state.modalValue.userName} readOnly allowClear={true} prefix={<UserOutlined />} style={{width: 200 , marginBottom : 10}}/><br/>
                     用户类型：<Select defaultValue={this.state.modalValue.userTypeName}
-                                 style={{width: 200}}
+                                 style={{width: 200 , marginBottom : 10}}
                                  id={"categoryNo"}
                                  onChange={this.onSelect}>
                     <Option value={1}>普通用户</Option>
                     <Option value={0}>管理员</Option>
                 </Select><br/>
-                    邮箱：<Input id={"email"} defaultValue={this.state.modalValue.email} allowClear={true} prefix={<MailOutlined />}/><br/>
-                    密码：<Input id={"password"} defaultValue={this.state.modalValue.password} allowClear={true} prefix={<LockOutlined />}/><br/>
+                    邮箱：<Input id={"email"} defaultValue={this.state.modalValue.email} allowClear={true} prefix={<MailOutlined />} style={{width: 200 , marginBottom : 10}}/><br/>
+                    密码：<Input id={"password"} defaultValue={this.state.modalValue.password} allowClear={true} prefix={<LockOutlined />} style={{width: 200 , marginBottom : 10}}/><br/>
                 </Modal>
 
                 <Modal visible={this.state.addModal}

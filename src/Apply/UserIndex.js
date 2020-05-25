@@ -40,7 +40,7 @@ class UserIndex extends React.Component {
                 align: 'center',
             },
             {
-                title: '类目编号',
+                title: '类目',
                 dataIndex: 'categoryNoName',
                 width: 200,
                 align: 'center',
@@ -518,26 +518,12 @@ class UserIndex extends React.Component {
                         <Panel header="个人捐赠图书搜索查询" key="1">
                             <Row gutter={18}>
                                 <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
-                                    <Form.Item name="bookNoSearch" label="书本编号">
-                                        <Input placeholder={"请输入书本编号"} style={{width: 200}} id={"bookNoSearch"}
-                                               allowClear={true}/>
-                                    </Form.Item>
-                                </Col>
-
-                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
-                                    <Form.Item name="bookNameSearch" label="书名">
-                                        <Input placeholder={"请输入书名"} style={{width: 200}} id={"bookNameSearch"}
-                                               allowClear={true}/>
-                                    </Form.Item>
-                                </Col>
-
-                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
-                                    <Form.Item name="categoryNoSearch" label="类目编号">
+                                    <Form.Item name="categoryNoSearch" label="类目">
                                         <Select defaultValue={this.state.modalValue.categoryNoName}
                                                 style={{width: 200}}
                                                 id={"categoryNoSearch"}
                                                 onChange={this.onSelectSearch}
-                                                placeholder={"请选择类目编号"}
+                                                placeholder={"请选择类目"}
                                                 allowClear>
                                             {
                                                 this.state.dictsSource.map(d => (
@@ -551,25 +537,39 @@ class UserIndex extends React.Component {
                                 </Col>
 
                                 <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
-                                    <Form.Item name="authorSearch" label="作者">
-                                        <Input placeholder={"请输入作者"} id={"authorSearch"} style={{width: 200}}
+                                    <Form.Item name="bookNameSearch" label="书名">
+                                        <Input placeholder={"请输入书名"} style={{width: 200}} id={"bookNameSearch"}
                                                allowClear={true}/>
                                     </Form.Item>
                                 </Col>
 
                                 <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
-                                    <Form.Item name="stateSearch" label="借出状态">
+                                    <Form.Item name="bookNoSearch" label="书本编号">
+                                        <Input placeholder={"请输入书本编号"} style={{width: 200}} id={"bookNoSearch"}
+                                               allowClear={true}/>
+                                    </Form.Item>
+                                </Col>
+
+                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                    <Form.Item name="stateSearch" label="状态">
                                         <Select
                                             style={{width: 200}}
                                             id={"stateSearch"}
                                             onChange={this.onSelectSearchState}
-                                            placeholder={"请选择借出状态"}
+                                            placeholder={"请选择书籍状态"}
                                             allowClear>
                                             <Option value={1}>已借出</Option>
                                             <Option value={0}>未借出</Option>
                                             <Option value={2}>待审核</Option>
                                             <Option value={3}>审核失败</Option>
                                         </Select>
+                                    </Form.Item>
+                                </Col>
+
+                                <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                    <Form.Item name="authorSearch" label="作者">
+                                        <Input placeholder={"请输入作者"} id={"authorSearch"} style={{width: 200}}
+                                               allowClear={true}/>
                                     </Form.Item>
                                 </Col>
                             </Row>
@@ -622,64 +622,6 @@ class UserIndex extends React.Component {
                             return className;
                         }
                     }/>
-                {/*<table>
-                    <th>书本编号</th>
-                    &nbsp;
-                    <th>书名</th>
-                    &nbsp;
-                    <th>类目编号</th>
-                    &nbsp;
-                    <th>图片地址</th>
-                    &nbsp;
-                    <th>书本描述</th>
-                    &nbsp;
-                    <th>作者</th>
-                    &nbsp;
-                    <th>状态</th>
-                    &nbsp;
-                    <th>操作</th>
-                    {this.state.dataSource.map(record => (
-                        <tr>
-                            <td>{record.bookNo}</td>
-                            &nbsp;&nbsp;
-                            <td>{record.bookName}</td>
-                            &nbsp;&nbsp;
-                            <td>{record.categoryNoName}</td>
-                            &nbsp;&nbsp;
-                            <td>
-                                <img src={"http://localhost:9999/bookservice-web/" + record.imageUrl}/>
-                            </td>
-                            &nbsp;&nbsp;
-                            <td>{record.description}</td>
-                            &nbsp;&nbsp;
-                            <td>{record.author}</td>
-                            &nbsp;&nbsp;
-                            <td>{record.stateName}</td>
-                            &nbsp;&nbsp;
-                            <td>
-                                {
-                                    record.stateName === "待审核" ?
-                                        <span>
-                                            <a onClick={this.updateBook.bind(this, record.id)}>修改</a>&nbsp;&nbsp;
-                                        </span> :
-                                        record.stateName === "审核失败" ?
-                                            <span>
-                                                <a onClick={this.updateBook.bind(this, record.id)}>修改</a>&nbsp;&nbsp;
-                                                <a onClick={this.reCheck.bind(this, record.bookNo)}>重新审核</a>
-                                            </span>
-                                            :
-                                            <span></span>
-                                }
-                            </td>
-                            &nbsp;&nbsp;
-                        </tr>
-                    ))}
-                    <tr>
-                        <td><a onClick={this.upperPage}>上一页</a></td>
-                        &nbsp;&nbsp;
-                        <a onClick={this.lowerPage}>下一页</a>
-                    </tr>
-                </table>*/}
 
                 <Modal visible={this.state.updateModal}
                        title={"图书修改"}
@@ -690,10 +632,10 @@ class UserIndex extends React.Component {
 
                     图书编号：<Input id={"bookNo"} defaultValue={this.state.modalValue.bookNo} readOnly/><br/>
                     书名：<Input id={"bookName"} defaultValue={this.state.modalValue.bookName} readOnly/>
-                    类目编号：<Select defaultValue={this.state.modalValue.categoryNoName}
-                                 style={{width: 200}}
-                                 id={"categoryNo"}
-                                 onChange={this.onSelect}>
+                    类目：<Select defaultValue={this.state.modalValue.categoryNoName}
+                               style={{width: 200}}
+                               id={"categoryNo"}
+                               onChange={this.onSelect}>
                     {
                         this.state.dictsSource.map(d => (
                             <Option key={d.categoryNo} value={d.categoryNo}>
@@ -720,11 +662,12 @@ class UserIndex extends React.Component {
                        maskClosable={false}
                        width={600}
                        destroyOnClose={true}>
-                    书名：<Input id={"bookNameAdd"} style={{width: 200}} placeholder={"请输入书名"}/><br/>
-                    类目编号：<Select
-                    style={{width: 200}}
+                    书名：<Input id={"bookNameAdd"} style={{width: 200}} placeholder={"请输入书名"} style={{width: 200 , marginBottom : 10}}/><br/>
+                    类目：<Select
+                    style={{width: 200 , marginBottom : 10}}
                     id={"categoryNo"}
-                    onChange={this.onSelectAdd}>
+                    onChange={this.onSelectAdd}
+                    placeholder={"请选择类目"}>
                     {
                         this.state.dictsSource.map(d => (
                             <Option key={d.categoryNo} value={d.categoryNo}>
@@ -736,9 +679,9 @@ class UserIndex extends React.Component {
 
                     </Option>
                 </Select><br/>
-                    图片： <input type={"file"} id={"imageAdd"} name={"imageAdd"} onChange={this.AddImg}/><br/>
-                    书本描述：<Input id={"descriptionAdd"} placeholder={"请输入书本描述"} style={{width: 200}}/><br/>
-                    作者：<Input id={"authorAdd"} placeholder={"请输入作者"} style={{width: 200}}/><br/>
+                    图片： <input type={"file"} id={"imageAdd"} name={"imageAdd"} onChange={this.AddImg} style={{width: 200 , marginBottom : 10}}/><br/>
+                    书本描述：<Input id={"descriptionAdd"} placeholder={"请输入书本描述"} style={{width: 200 , marginBottom : 10}}/><br/>
+                    作者：<Input id={"authorAdd"} placeholder={"请输入作者"} style={{width: 200 , marginBottom : 10}}/><br/>
                 </Modal>
             </div>
         );

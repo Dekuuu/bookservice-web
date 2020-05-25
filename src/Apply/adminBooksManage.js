@@ -40,7 +40,7 @@ class adminBooksManage extends React.Component {
                 align: 'center',
             },
             {
-                title: '类目编号',
+                title: '类目',
                 dataIndex: 'categoryNoName',
                 width: 200,
                 align: 'center',
@@ -752,13 +752,6 @@ class adminBooksManage extends React.Component {
                             <Panel header="管理员图书信息搜索查询" key="1">
                                 <Row gutter={18}>
                                     <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
-                                        <Form.Item name="bookNoSearch" label="书本编号">
-                                            <Input placeholder={"请输入书本编号"} style={{width: 200}} id={"bookNoSearch"}
-                                                   allowClear={true}/>
-                                        </Form.Item>
-                                    </Col>
-
-                                    <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
                                         <Form.Item name="bookNameSearch" label="书名">
                                             <Input placeholder={"请输入书名"} style={{width: 200}} id={"bookNameSearch"}
                                                    allowClear={true}/>
@@ -766,12 +759,12 @@ class adminBooksManage extends React.Component {
                                     </Col>
 
                                     <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
-                                        <Form.Item name="categoryNoSearch" label="类目编号">
+                                        <Form.Item name="categoryNoSearch" label="类目">
                                             <Select defaultValue={this.state.modalValue.categoryNoName}
                                                     style={{width: 200}}
                                                     id={"categoryNoSearch"}
                                                     onChange={this.onSelectSearch}
-                                                    placeholder={"请选择类目编号"}
+                                                    placeholder={"请选择类目"}
                                                     allowClear>
                                                 {
                                                     this.state.dictsSource.map(d => (
@@ -785,6 +778,13 @@ class adminBooksManage extends React.Component {
                                     </Col>
 
                                     <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
+                                        <Form.Item name="bookNoSearch" label="书本编号">
+                                            <Input placeholder={"请输入书本编号"} style={{width: 200}} id={"bookNoSearch"}
+                                                   allowClear={true}/>
+                                        </Form.Item>
+                                    </Col>
+
+                                    <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
                                         <Form.Item name="authorSearch" label="作者">
                                             <Input placeholder={"请输入作者"} id={"authorSearch"} style={{width: 200}}
                                                    allowClear={true}/>
@@ -792,28 +792,28 @@ class adminBooksManage extends React.Component {
                                     </Col>
 
                                     <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
-                                        <Form.Item name="stateSearch" label="借出状态">
-                                    <Select
-                                    style={{width: 200}}
-                                    id={"stateSearch"}
-                                    onChange={this.onSelectSearchState}
-                                    placeholder={"请选择借出状态"}
-                                    allowClear>
-                                    <Option value={1}>已借出</Option>
-                                    <Option value={0}>未借出</Option>
-                                    <Option value={2}>待审核</Option>
-                                    <Option value={3}>未审核</Option>
-                                </Select>
+                                        <Form.Item name="stateSearch" label="状态">
+                                            <Select
+                                                style={{width: 200}}
+                                                id={"stateSearch"}
+                                                onChange={this.onSelectSearchState}
+                                                placeholder={"请选择状态"}
+                                                allowClear>
+                                                <Option value={1}>已借出</Option>
+                                                <Option value={0}>未借出</Option>
+                                                <Option value={2}>待审核</Option>
+                                                <Option value={3}>未审核</Option>
+                                            </Select>
                                         </Form.Item>
                                     </Col>
                                 </Row>
 
                                 <Row gutter={24}>
                                     <Col span={24} style={{textAlign: 'right'}}>
-                                    <Button type={"primary"} onClick={this.fetchData} icon={<SearchOutlined/>}
-                                                  shape={"circle"}></Button>&nbsp;&nbsp;
-                                    <Button type={"primary"} onClick={this.reset}>重置</Button>&nbsp;&nbsp;
-                                    <Button type={"primary"} onClick={this.add}>新增</Button>
+                                        <Button type={"primary"} onClick={this.fetchData} icon={<SearchOutlined/>}
+                                                shape={"circle"}></Button>&nbsp;&nbsp;
+                                        <Button type={"primary"} onClick={this.reset}>重置</Button>&nbsp;&nbsp;
+                                        <Button type={"primary"} onClick={this.add}>新增</Button>
                                     </Col>
                                 </Row>
                             </Panel>
@@ -856,66 +856,6 @@ class adminBooksManage extends React.Component {
                                 return className;
                             }
                         }/>
-                    {/*<table>
-                        <th>书本编号</th>
-                        &nbsp;
-                        <th>书名</th>
-                        &nbsp;
-                        <th>类目编号</th>
-                        &nbsp;
-                        <th>图片地址</th>
-                        &nbsp;
-                        <th>书本描述</th>
-                        &nbsp;
-                        <th>作者</th>
-                        &nbsp;
-                        <th>状态</th>
-                        &nbsp;
-                        <th>操作</th>
-                        {this.state.dataSource.map(record => (
-                            <tr>
-                                <td>{record.bookNo}</td>
-                                &nbsp;&nbsp;
-                                <td>{record.bookName}</td>
-                                &nbsp;&nbsp;
-                                <td>{record.categoryNoName}</td>
-                                &nbsp;&nbsp;
-                                <td>
-                                    <img src={"http://localhost:9999/bookservice-web/" + record.imageUrl}/>
-                                </td>
-                                &nbsp;&nbsp;
-                                <td>{record.description}</td>
-                                &nbsp;&nbsp;
-                                <td>{record.author}</td>
-                                &nbsp;&nbsp;
-                                <td>{record.stateName}</td>
-                                &nbsp;&nbsp;
-                                <td>
-                                    <a onClick={this.updateBook.bind(this, record.id)}>修改</a>&nbsp;&nbsp;
-                                    {
-                                        record.stateName === "已借出" ?
-                                            <span>
-                                            <a onClick={this.returnBook.bind(this, record.bookNo)}>归还</a>&nbsp;&nbsp;
-                                                <a onClick={this.reNew.bind(this, record.bookNo)}>续借</a>
-                                        </span> :
-                                            record.stateName === "未借出" ?
-                                                <a onClick={this.borrowBook.bind(this, record.bookNo)}>借阅</a> :
-                                                record.stateName === "待审核" ?
-                                                    <a onClick={this.checkBook.bind(this, record.bookNo)}>审核</a> :
-                                                    record.stateName === "审核失败" ?
-                                                        <a onClick={this.borrowBook.bind(this, record.bookNo)}>借阅</a> :
-                                                        <span></span>
-                                    }
-                                </td>
-                                &nbsp;&nbsp;
-                            </tr>
-                        ))}
-                        <tr>
-                            <td><a onClick={this.upperPage}>上一页</a></td>
-                            &nbsp;&nbsp;
-                            <a onClick={this.lowerPage}>下一页</a>
-                        </tr>
-                    </table>*/}
 
                     <Modal visible={this.state.updateModal}
                            title={"图书修改"}
@@ -924,12 +864,12 @@ class adminBooksManage extends React.Component {
                            maskClosable={false}
                            width={600}>
 
-                        图书编号：<Input id={"bookNo"} defaultValue={this.state.modalValue.bookNo} readOnly/><br/>
-                        书名：<Input id={"bookName"} defaultValue={this.state.modalValue.bookName} readOnly/>
-                        类目编号：<Select defaultValue={this.state.modalValue.categoryNoName}
-                                     style={{width: 200}}
-                                     id={"categoryNo"}
-                                     onChange={this.onSelect}>
+                        图书编号：<Input id={"bookNo"} defaultValue={this.state.modalValue.bookNo} readOnly style={{width: 200 , marginBottom : 10}}/><br/>
+                        书名：<Input id={"bookName"} defaultValue={this.state.modalValue.bookName} readOnly style={{width: 200 , marginBottom : 10}}/><br/>
+                        类目：<Select defaultValue={this.state.modalValue.categoryNoName}
+                                   style={{width: 200 , marginBottom : 10}}
+                                   id={"categoryNo"}
+                                   onChange={this.onSelect}>
                         {
                             this.state.dictsSource.map(d => (
                                 <Option key={d.categoryNo} value={d.categoryNo}>
@@ -938,12 +878,12 @@ class adminBooksManage extends React.Component {
                             ))
                         }
                     </Select><br/>
-                        <form id="form-upload" role="form">
+                        <form id="form-upload" role="form"  style={{marginBottom : 10}}>
                             图片：<img src={this.state.modalValue.imageUrl}/>
                             <input type={"file"} id={"image"} name={"image"} onChange={this.updateImg}/><br/>
                         </form>
-                        书本描述：<Input id={"description"} defaultValue={this.state.modalValue.description}/><br/>
-                        作者：<Input id={"author"} defaultValue={this.state.modalValue.author}/><br/>
+                        书本描述：<Input id={"description"} defaultValue={this.state.modalValue.description} style={{width: 200 , marginBottom : 10}}/><br/>
+                        作者：<Input id={"author"} defaultValue={this.state.modalValue.author} style={{width: 200 , marginBottom : 10}}/><br/>
                     </Modal>
 
                     <Modal visible={this.state.addModal}
@@ -953,11 +893,12 @@ class adminBooksManage extends React.Component {
                            maskClosable={false}
                            width={600}
                            destroyOnClose={true}>
-                        书名：<Input id={"bookNameAdd"} style={{width: 200}} placeholder={"请输入书名"}/><br/>
-                        类目编号：<Select
-                        style={{width: 200}}
+                        书名：<Input id={"bookNameAdd"} style={{width: 200, marginBottom : 10}} placeholder={"请输入书名"}/><br/>
+                        类目：<Select
+                        style={{width: 200 , marginBottom : 10}}
                         id={"categoryNo"}
-                        onChange={this.onSelectAdd}>
+                        onChange={this.onSelectAdd}
+                        placeholder={"请选择类目"}>
                         {
                             this.state.dictsSource.map(d => (
                                 <Option key={d.categoryNo} value={d.categoryNo}>
@@ -969,9 +910,9 @@ class adminBooksManage extends React.Component {
 
                         </Option>
                     </Select><br/>
-                        图片： <input type={"file"} id={"imageAdd"} name={"imageAdd"} onChange={this.AddImg}/><br/>
-                        书本描述：<Input id={"descriptionAdd"} placeholder={"请输入书本描述"} style={{width: 200}}/><br/>
-                        作者：<Input id={"authorAdd"} placeholder={"请输入作者"} style={{width: 200}}/><br/>
+                        图片： <input type={"file"} id={"imageAdd"} name={"imageAdd"} onChange={this.AddImg} style={{marginBottom : 10}}/><br/>
+                        书本描述：<Input id={"descriptionAdd"} placeholder={"请输入书本描述"} style={{width: 200 ,  marginBottom : 10}}/><br/>
+                        作者：<Input id={"authorAdd"} placeholder={"请输入作者"} style={{width: 200 , marginBottom : 10}}/><br/>
                     </Modal>
 
                     <Modal visible={this.state.borrowBookModal}
@@ -991,12 +932,12 @@ class adminBooksManage extends React.Component {
                            maskClosable={false}
                            width={600}
                            destroyOnClose={true}>
-                        图书编号：<Input defaultValue={this.state.checkModalValue.bookNo} readOnly/><br/>
-                        书名：<Input defaultValue={this.state.checkModalValue.bookName} readOnly/>
-                        类目编号：<Select defaultValue={this.state.checkModalValue.categoryNoName}
-                                     style={{width: 200}}
-                                     onChange={this.onSelect}
-                                     readOnly>
+                        图书编号：<Input defaultValue={this.state.checkModalValue.bookNo} readOnly style={{width: 200 , marginBottom : 10}}/><br/>
+                        书名：<Input defaultValue={this.state.checkModalValue.bookName} readOnly style={{width: 200 , marginBottom : 10}}/>
+                        类目：<Select defaultValue={this.state.checkModalValue.categoryNoName}
+                                   style={{width: 200 , marginBottom : 10}}
+                                   onChange={this.onSelect}
+                                   readOnly>
                         {
                             this.state.dictsSource.map(d => (
                                 <Option key={d.categoryNo} value={d.categoryNo}>
@@ -1005,9 +946,9 @@ class adminBooksManage extends React.Component {
                             ))
                         }
                     </Select><br/>
-                        图片：<img src={this.state.checkModalValue.imageUrl}/>
-                        书本描述：<Input defaultValue={this.state.checkModalValue.description} readOnly/><br/>
-                        作者：<Input defaultValue={this.state.checkModalValue.author} readOnly/><br/>
+                        图片：<img src={this.state.checkModalValue.imageUrl} style={{marginBottom : 10}}/>
+                        书本描述：<Input defaultValue={this.state.checkModalValue.description} readOnly style={{width: 200 , marginBottom : 10}}/><br/>
+                        作者：<Input defaultValue={this.state.checkModalValue.author} readOnly style={{width: 200 , marginBottom : 10}}/><br/>
                         <Button type={"primary"} onClick={this.passCheck}>审核通过</Button>&nbsp;&nbsp;
                         <Button type={"danger"} onClick={this.notPassCheck}>不通过</Button>
                     </Modal>
@@ -1020,15 +961,9 @@ class adminBooksManage extends React.Component {
                     }
                 </div>
             </div>
-    );
+        );
     }
-    }
-
-        /*function fetchData() {
-            fetch('http://localhost:8080/testController/test?id=asd')
-                .then(res => res.json())
-                .then(json => console.log(json.userName))
-        }*/
+}
 
 
-    export default adminBooksManage;
+export default adminBooksManage;

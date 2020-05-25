@@ -315,7 +315,7 @@ class ipLog extends React.Component {
 
                                 <Col xxl={8} xl={8} lg={12} md={12} sm={24} xs={24}>
                                     <Form.Item name="dateSearch" label="登录日期">
-                                        <DatePicker placeholder="请选择登陆日期" onChange={this.dateSearch} allowClear/>
+                                        <DatePicker placeholder="请选择登录日期" onChange={this.dateSearch} allowClear/>
                                     </Form.Item>
                                 </Col>
                             </Row>
@@ -386,15 +386,15 @@ class ipLog extends React.Component {
                     </tr>
                 </table>*/}
             </div>
-    );
+        );
     }
-    }
+}
 
-        /*function fetchData() {
-            fetch('http://localhost:8080/testController/test?id=asd')
-                .then(res => res.json())
-                .then(json => console.log(json.userName))
-        }*/
+/*function fetchData() {
+    fetch('http://localhost:8080/testController/test?id=asd')
+        .then(res => res.json())
+        .then(json => console.log(json.userName))
+}*/
 
 
-    export default ipLog;
+export default ipLog;

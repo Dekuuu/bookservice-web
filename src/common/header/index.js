@@ -44,7 +44,7 @@ class Header extends React.Component{
                     </NavItem>
                     <NavItem className={'right active'}>
                         {
-                            this.state.user.userType == null ? <a href={"/bookservice-web/personal"}>个人中心</a> :
+                            this.state.user.userType == null ? <span></span> :
                                 <div>
                                     <span>欢迎你,{this.state.user.userName}</span>
                                     <a href={"/bookservice-web/personal"}>个人中心</a>

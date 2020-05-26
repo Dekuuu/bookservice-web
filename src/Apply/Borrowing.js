@@ -66,7 +66,7 @@ class Borrowing extends React.Component {
             {
                 title: '归还状态',
                 dataIndex: 'returnState',
-                width: 100,
+                width: 150,
                 align: 'center',
                 render: (text, record, index) => {
                     return text === 0 ? <span style={{color: 'red'}}>未归还</span> :
@@ -75,7 +75,7 @@ class Borrowing extends React.Component {
             },
             {
                 title: '操作',
-                width: 200,
+                width: 150,
                 align: 'center',
                 render: (text, record, index) => {
                     return record.renewAble === 1 && record.returnState === 0 ?

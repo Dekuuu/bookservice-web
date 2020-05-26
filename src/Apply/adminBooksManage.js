@@ -626,8 +626,8 @@ class adminBooksManage extends React.Component {
     returnBook = (value) => {
         let data = {
             borrowingBookNo: value,
-            startIndex: this.state.pagination.startIndex,
-            endIndex: this.state.pagination.endIndex,
+            startIndex: 0,
+            endIndex: 100,
             pageSize: this.state.pagination.pageSize,
             currentPage: this.state.pagination.currentPage,
             total: this.state.pagination.total,
@@ -933,7 +933,7 @@ class adminBooksManage extends React.Component {
                            width={600}
                            destroyOnClose={true}>
                         图书编号：<Input defaultValue={this.state.checkModalValue.bookNo} readOnly style={{width: 200 , marginBottom : 10}}/><br/>
-                        书名：<Input defaultValue={this.state.checkModalValue.bookName} readOnly style={{width: 200 , marginBottom : 10}}/>
+                        书名：<Input defaultValue={this.state.checkModalValue.bookName} readOnly style={{width: 200 , marginBottom : 10}}/><br/>
                         类目：<Select defaultValue={this.state.checkModalValue.categoryNoName}
                                    style={{width: 200 , marginBottom : 10}}
                                    onChange={this.onSelect}
@@ -946,7 +946,7 @@ class adminBooksManage extends React.Component {
                             ))
                         }
                     </Select><br/>
-                        图片：<img src={this.state.checkModalValue.imageUrl} style={{marginBottom : 10}}/>
+                        图片：<img src={this.state.checkModalValue.imageUrl} style={{marginBottom : 10}}/><br/>
                         书本描述：<Input defaultValue={this.state.checkModalValue.description} readOnly style={{width: 200 , marginBottom : 10}}/><br/>
                         作者：<Input defaultValue={this.state.checkModalValue.author} readOnly style={{width: 200 , marginBottom : 10}}/><br/>
                         <Button type={"primary"} onClick={this.passCheck}>审核通过</Button>&nbsp;&nbsp;

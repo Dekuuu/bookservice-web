@@ -43,6 +43,12 @@ class adminUserManage extends React.Component {
                 align: 'center',
             },
             {
+                title: '创建时间',
+                dataIndex: 'createTime',
+                width: 200,
+                align: 'center',
+            },
+            {
                 title: '操作',
                 width: 200,
                 align: 'center',

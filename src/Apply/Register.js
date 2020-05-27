@@ -114,7 +114,7 @@ class Register extends React.Component {
             .then(res => res.json())
             .then(re => {
                 if(re.code === 1){
-                    alert("验证码发送成功!");
+                    alert("验证码发送成功，请在20分钟内尽快完成注册!");
                 }else{
                     alert(re.data);
                 }

@@ -501,7 +501,7 @@ class adminUserManage extends React.Component {
                     <Option value={0}>管理员</Option>
                 </Select><br/>
                     邮箱：<Input id={"email"} defaultValue={this.state.modalValue.email} allowClear={true} prefix={<MailOutlined />} style={{width: 200 , marginBottom : 10}}/><br/>
-                    密码：<Input id={"password"} defaultValue={this.state.modalValue.password} allowClear={true} prefix={<LockOutlined />} style={{width: 200 , marginBottom : 10}}/><br/>
+                    密码：<Input id={"password"} type={"password"} defaultValue={this.state.modalValue.password} allowClear={true} prefix={<LockOutlined />} style={{width: 200 , marginBottom : 10}}/><br/>
                 </Modal>
 
                 <Modal visible={this.state.addModal}
@@ -527,7 +527,7 @@ class adminUserManage extends React.Component {
                     </Option>
                 </Select><br/>
                     密码：<Input id={"passwordAdd"} placeholder={"请输入密码"} style={{width: 200, marginBottom: 20}}
-                              allowClear={true} prefix={<LockOutlined />}/><br/>
+                              allowClear={true} prefix={<LockOutlined />} type={"password"}/><br/>
                     邮箱：<Input id={"emailAdd"} placeholder={"请输入邮箱"} style={{width: 200, marginBottom: 20}}
                               allowClear={true} prefix={<MailOutlined />}/><br/>
                 </Modal>

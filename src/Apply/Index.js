@@ -90,7 +90,7 @@ class Index extends React.Component {
                 author: '',
             },
             pagination: {
-                currentPage: parseInt(window.location.hash.slice(1), 0) || 1,
+                current: parseInt(window.location.hash.slice(1), 0) || 1,
                 pageSize: 10,
                 startIndex: 0,
                 endIndex: 10,
@@ -112,7 +112,7 @@ class Index extends React.Component {
         this.state.categoryNoSearch = '';
         this.state.stateSearch = '';
 
-        this.state.pagination.currentPage = 1;
+        this.state.pagination.current = 1;
         this.state.pagination.pageSize = 10;
         this.state.pagination.startIndex = 0;
         this.state.pagination.endIndex = 10;
@@ -133,7 +133,7 @@ class Index extends React.Component {
                 author: '',
             },
             pagination: {
-                currentPage: 1,
+                current: 1,
                 pageSize: 10,
                 startIndex: 0,
                 endIndex: 10,
@@ -172,7 +172,7 @@ class Index extends React.Component {
             startIndex: this.state.pagination.startIndex,
             endIndex: this.state.pagination.endIndex,
             pageSize: this.state.pagination.pageSize,
-            currentPage: this.state.pagination.currentPage,
+            currentPage: this.state.pagination.current,
             total: this.state.pagination.total,
             state: this.state.stateSearch
         };
@@ -194,14 +194,14 @@ class Index extends React.Component {
                     pagination: {...pagination},
                 }, () => {
                     console.log("f" + this.state.params);
-                    console.log("f" + pagination.currentPage);
+                    console.log("f" + pagination.current);
                 })
             })
     }
 
     // 接收子组件表格页码变化后返回的pagination
     paginationChange(pagination) {
-        this.state.pagination.currentPage = pagination.current
+        this.state.pagination.current = pagination.current
         this.state.pagination.pageSize = pagination.pageSize
         this.state.pagination.startIndex = (pagination.current - 1) * pagination.pageSize
         this.state.pagination.endIndex = pagination.current * pagination.pageSize
